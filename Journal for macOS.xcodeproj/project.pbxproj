@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		561605E42CD50348001D16F2 /* Glur in Frameworks */ = {isa = PBXBuildFile; productRef = 561605E32CD50348001D16F2 /* Glur */; };
+		561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */; };
+		561605FD2CD51BCD001D16F2 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 561605FC2CD51BCD001D16F2 /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		561605B92CD4F60D001D16F2 /* Journal for macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Journal for macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +29,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				561605E42CD50348001D16F2 /* Glur in Frameworks */,
+				561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */,
+				561605FD2CD51BCD001D16F2 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +74,9 @@
 			);
 			name = "Journal for macOS";
 			packageProductDependencies = (
+				561605E32CD50348001D16F2 /* Glur */,
+				561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */,
+				561605FC2CD51BCD001D16F2 /* Lottie */,
 			);
 			productName = "Journal for macOS";
 			productReference = 561605B92CD4F60D001D16F2 /* Journal for macOS.app */;
@@ -94,6 +106,11 @@
 			);
 			mainGroup = 561605B02CD4F60D001D16F2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				561605E22CD50348001D16F2 /* XCRemoteSwiftPackageReference "Glur" */,
+				561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 561605BA2CD4F60D001D16F2 /* Products */;
 			projectDirPath = "";
@@ -319,6 +336,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		561605E22CD50348001D16F2 /* XCRemoteSwiftPackageReference "Glur" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joogps/Glur";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+		561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
+		561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		561605E32CD50348001D16F2 /* Glur */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 561605E22CD50348001D16F2 /* XCRemoteSwiftPackageReference "Glur" */;
+			productName = Glur;
+		};
+		561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		561605FC2CD51BCD001D16F2 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 561605B12CD4F60D001D16F2 /* Project object */;
 }

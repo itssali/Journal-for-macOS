@@ -13,5 +13,6 @@ struct Journal_for_macOSApp: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(.hiddenTitleBar)
     }
 }
