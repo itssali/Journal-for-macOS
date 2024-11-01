@@ -72,7 +72,7 @@ struct ContentView: View {
                 icon: "quote.bubble",
                 title: "Total Words",
                 value: "\(totalWords)",
-                iconColor: Color(red: 0.345, green: 0.333, blue: 0.573)
+                iconColor: Color(hex: "C06E6E")
             )
             .padding(.horizontal, 16)
             
@@ -80,7 +80,7 @@ struct ContentView: View {
                 icon: "calendar.badge.clock",
                 title: "Days Journaled",
                 value: "\(journaledDays)",
-                iconColor: Color(red: 0.345, green: 0.333, blue: 0.573)
+                iconColor: Color(red: 0.37, green: 0.36, blue: 0.90)
             )
             .padding(.horizontal, 16)
         }
@@ -146,6 +146,33 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
     }
 }
 
