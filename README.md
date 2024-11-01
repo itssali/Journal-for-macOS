@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Assets/AppIcon.png" width="128" height="128" />
+  <img src="Journal for macOS/Assets.xcassets/AppIcon.appiconset/Apple_Journal_-_App_Icon_-_iOS17-256.png" width="128" height="128" />
   <h1>Journal for macOS</h1>
   <p>A native journaling app for macOS inspired by Apple's Journal app for iOS</p>
   <p>
