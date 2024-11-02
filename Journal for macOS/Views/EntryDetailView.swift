@@ -1,73 +1,93 @@
 import SwiftUI
 
 struct EntryDetailView: View {
-    let entry: JournalEntry
+    @Binding var entry: JournalEntry?
     let onUpdate: (JournalEntry) -> Void
     @State private var isEditing = false
-    @State private var editingEntry: JournalEntry
+    @State private var editingEntry: JournalEntry?
     
-    init(entry: JournalEntry, onUpdate: @escaping (JournalEntry) -> Void) {
-        self.entry = entry
+    init(entry: Binding<JournalEntry?>, onUpdate: @escaping (JournalEntry) -> Void) {
+        self._entry = entry
         self.onUpdate = onUpdate
-        _editingEntry = State(initialValue: entry)
+        self._editingEntry = State(initialValue: entry.wrappedValue)
     }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Text(editingEntry.title)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
-                    Spacer()
-                    
-                    Button(action: { isEditing.toggle() }) {
-                        Image(systemName: "pencil")
+        if let editingEntry = editingEntry {
+            ZStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            Text(editingEntry.title)
+                                .font(.title)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Button(action: { 
+                                entry?.isEditing = true 
+                            }) {
+                                Image(systemName: "pencil")
+                                    .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        
+                        Text(formatDate(editingEntry.date))
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
+                        
+                        FlowLayout(spacing: 8) {
+                            ForEach(editingEntry.emotions, id: \.self) { emotion in
+                                Text(emotion)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(1))
+                                    )
+                            }
+                        }
+                        
+                        Text(editingEntry.content)
+                            .font(.body)
+                            .lineSpacing(8)
                     }
-                    .buttonStyle(.plain)
+                    .padding(32)
                 }
                 
-                Text(formatDate(editingEntry.date))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                FlowLayout(spacing: 8) {
-                    ForEach(editingEntry.emotions, id: \.self) { emotion in
-                        Text(emotion)
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(0.1))
-                            )
-                    }
-                }
-                
-                Text(editingEntry.content)
-                    .font(.body)
-                    .lineSpacing(8)
+                CustomSheet(
+                    isPresented: isEditing,
+                    content: EditEntryView(
+                        entry: Binding(
+                            get: { editingEntry },
+                            set: { newValue in
+                                self.editingEntry = newValue
+                                self.entry = newValue
+                                onUpdate(newValue)
+                            }
+                        ),
+                        onDismiss: { isEditing = false }
+                    ),
+                    onDismiss: { isEditing = false }
+                )
             }
-            .padding(32)
-            .id(editingEntry.id)
-            .transition(.asymmetric(
-                insertion: .move(edge: .trailing).combined(with: .opacity),
-                removal: .move(edge: .leading).combined(with: .opacity)
-            ))
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: editingEntry.id)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .sheet(isPresented: $isEditing) {
-            EditEntryView(entry: Binding(
-                get: { editingEntry },
-                set: { newValue in
-                    editingEntry = newValue
-                    onUpdate(newValue)
+            .onAppear {
+                self.editingEntry = entry
+            }
+            .onChange(of: entry) { oldValue, newValue in
+                if let newValue {
+                    self.editingEntry = newValue
                 }
-            ))
-            .sheetTransition(isPresented: isEditing)
+                
+            }
+            
+        } else {
+            Text("No entry selected")
+                .font(.title2)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
     

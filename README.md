@@ -26,7 +26,11 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 
 ## 🖥 Screenshots
 
-[Screenshots coming soon]
+<div align="center">
+  <img src="Assets/main.png" width="800" alt="Main View with Sidebar" />
+  <br/><br/>
+  <img src="Assets/new-entry.png" width="800" alt="New Entry Sheet" />
+</div>
 
 ## 🚀 Getting Started
 

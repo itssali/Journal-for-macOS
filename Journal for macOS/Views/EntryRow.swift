@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EntryRow: View {
+    @StateObject private var storage = LocalStorageManager.shared
     let entry: JournalEntry
     @State private var isVisible = false
     @Binding var selectedEntry: JournalEntry?
@@ -49,9 +50,19 @@ struct EntryRow: View {
             }
         }
         .padding(12)
-        .listTransition(isVisible: isVisible)
-        .onAppear { isVisible = true }
-        .onDisappear { isVisible = false }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
+                    storage.entries.remove(at: index)
+                    storage.saveEntries()
+                    if selectedEntry?.id == entry.id {
+                        selectedEntry = nil
+                    }
+                }
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
     
     private func formatDate(_ date: Date) -> String {
