@@ -2,30 +2,55 @@ import SwiftUI
 import SwiftUIIntrospect
 
 struct EditEntryView: View {
-    @Environment(\.dismiss) private var dismiss
+    let onDismiss: () -> Void
     @StateObject private var storage = LocalStorageManager.shared
     @Binding var entry: JournalEntry
     @State private var title: String
     @State private var content: String
     @State private var selectedEmotions: Set<String>
+    @State private var showingAnimation = false
     
     let emotions = ["Happy", "Sad", "Anxious", "Excited", "Angry", "Peaceful"]
     
-    init(entry: Binding<JournalEntry>) {
+    init(entry: Binding<JournalEntry>, onDismiss: @escaping () -> Void) {
         _entry = entry
         _title = State(initialValue: entry.wrappedValue.title)
         _content = State(initialValue: entry.wrappedValue.content)
         _selectedEmotions = State(initialValue: Set(entry.wrappedValue.emotions))
+        self.onDismiss = onDismiss
     }
     
     var body: some View {
         VStack(spacing: 20) {
             HStack {
-                Text("Edit Entry")
-                    .font(.title)
-                    .fontWeight(.bold)
+                Button(role: .destructive) {
+                    if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
+                        storage.entries.remove(at: index)
+                        storage.saveEntries()
+                        onDismiss()
+                    }
+                } label: {
+                    Label("Delete Entry", systemImage: "trash")
+                }
                 Spacer()
-                Button("Cancel") { dismiss() }
+                HStack(spacing: 16) {
+                    Button("Cancel") { onDismiss() }
+                    Button("Save") {
+                        let updatedEntry = JournalEntry(
+                            id: entry.id,
+                            title: title,
+                            content: content,
+                            date: entry.date,
+                            emotions: Array(selectedEmotions),
+                            tags: entry.tags,
+                            wordCount: content.split(separator: " ").count
+                        )
+                        entry = updatedEntry
+                        onDismiss()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(title.isEmpty || content.isEmpty)
+                }
             }
             .padding()
             
@@ -33,7 +58,6 @@ struct EditEntryView: View {
                 .padding(.horizontal)
             
             CustomTextEditor(placeholder: "Content", text: $content)
-                .frame(height: 200)
                 .padding(.horizontal)
             
             VStack(alignment: .leading) {
@@ -57,24 +81,7 @@ struct EditEntryView: View {
             .padding()
             
             Spacer()
-            
-            Button("Save") {
-                entry = JournalEntry(
-                    id: entry.id,
-                    title: title,
-                    content: content,
-                    date: entry.date,
-                    emotions: Array(selectedEmotions),
-                    tags: entry.tags,
-                    wordCount: content.split(separator: " ").count
-                )
-                storage.updateEntry(entry)
-                dismiss()
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(title.isEmpty || content.isEmpty)
-            .padding()
         }
-        .frame(width: 600, height: 600)
+       
     }
 } 

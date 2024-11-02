@@ -4,31 +4,27 @@ import Lottie
 struct LottieView: NSViewRepresentable {
     let animationName: String
     let loopMode: LottieLoopMode
-    let animationSpeed: CGFloat
+    let completion: (() -> Void)?
     
-    init(_ animationName: String, 
-         loopMode: LottieLoopMode = .playOnce,
-         speed: CGFloat = 1) {
+    init(_ animationName: String, loopMode: LottieLoopMode = .playOnce, completion: (() -> Void)? = nil) {
         self.animationName = animationName
         self.loopMode = loopMode
-        self.animationSpeed = speed
+        self.completion = completion
     }
     
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
         let animationView = LottieAnimationView(name: animationName)
         animationView.loopMode = loopMode
-        animationView.animationSpeed = animationSpeed
-        
-        animationView.translatesAutoresizingMaskIntoConstraints = false
+        animationView.contentMode = .scaleAspectFit
+        animationView.frame = view.bounds
+        animationView.autoresizingMask = [.width, .height]
         view.addSubview(animationView)
-        
-        NSLayoutConstraint.activate([
-            animationView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            animationView.heightAnchor.constraint(equalTo: view.heightAnchor)
-        ])
-        
-        animationView.play()
+        animationView.play { finished in
+            if finished {
+                completion?()
+            }
+        }
         return view
     }
     

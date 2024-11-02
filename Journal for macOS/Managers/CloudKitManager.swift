@@ -12,8 +12,13 @@ class CloudKitManager: ObservableObject {
         let query = CKQuery(recordType: "JournalEntry", predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
-        _ = try await container.privateCloudDatabase.records(matching: query)
-        // Process and update entries
+        let result = try await container.privateCloudDatabase.records(matching: query)
+        let records = result.matchResults.compactMap { try? $0.1.get() }
+        let entries = records.compactMap { JournalEntry(from: $0) }
+        
+        await MainActor.run {
+            self.entries = entries
+        }
     }
     
     func saveEntry(_ entry: JournalEntry) async throws {

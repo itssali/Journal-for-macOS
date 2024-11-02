@@ -40,22 +40,46 @@ struct ContentView: View {
     }
     
     var body: some View {
-        HSplitView {
-            VStack(spacing: 0) {
-                statsHeader
-                
-                Divider()
-                
-                entriesList
+        ZStack {
+            HSplitView {
+                VStack(spacing: 0) {
+                    statsHeader
+                    Divider()
+                    entriesList
+                }
+                .frame(width: 425)
+                detailView
             }
-            .frame(width: 425)
             
-            detailView
-        }
-        .sheet(isPresented: $showingNewEntry) {
-            NewEntryView()
-        }
+            CustomSheet(
+            isPresented: showingNewEntry,
+            content: NewEntryView(onDismiss: { showingNewEntry = false }),
+            onDismiss: { showingNewEntry = false }
+        )
+        
+        CustomSheet(
+            isPresented: selectedEntry?.isEditing ?? false,
+            content: EditEntryView(
+                entry: Binding(
+                    get: { selectedEntry ?? JournalEntry.empty },
+                    set: { updatedEntry in
+                        if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
+                            storage.entries[index] = updatedEntry
+                            selectedEntry = updatedEntry
+                            storage.saveEntries()
+                        }
+                    }
+                ),
+                onDismiss: { 
+                    selectedEntry?.isEditing = false 
+                }
+            ),
+            onDismiss: { 
+                selectedEntry?.isEditing = false 
+            }
+        )
     }
+}
     
     // Break down body into smaller views
     private var statsHeader: some View {
@@ -90,18 +114,21 @@ struct ContentView: View {
     
     private var entriesList: some View {
         ZStack(alignment: .bottom) {
-            List(selection: $selectedEntry) {
+            List {
                 ForEach(monthGroups, id: \.self) { month in
                     Section(header: Text(month).font(.headline)) {
-                        ForEach(entriesForMonth(month)) { entry in
+                        ForEach(storage.entries.filter { monthString(for: $0.date) == month }) { entry in
                             EntryRow(entry: entry, selectedEntry: $selectedEntry)
-                                .tag(entry)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedEntry = entry
+                                }
                                 .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                                 .listRowBackground(
                                     RoundedRectangle(cornerRadius: 8)
                                         .fill(selectedEntry?.id == entry.id ? 
                                               Color.accentColor.opacity(0.15) : 
-                                              Color.clear)
+                                                Color.clear)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
                                 )
@@ -110,7 +137,6 @@ struct ContentView: View {
                 }
             }
             .listStyle(.sidebar)
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedEntry?.id)
             
             newEntryButton
         }
@@ -131,11 +157,11 @@ struct ContentView: View {
     
     private var detailView: some View {
         Group {
-            if let entry = selectedEntry {
-                EntryDetailView(entry: entry, onUpdate: { updatedEntry in
+            if selectedEntry != nil {
+                EntryDetailView(entry: $selectedEntry, onUpdate: { updatedEntry in
                     if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
-                        selectedEntry = updatedEntry
                         storage.entries[index] = updatedEntry
+                        selectedEntry = updatedEntry
                         storage.saveEntries()
                     }
                 })
