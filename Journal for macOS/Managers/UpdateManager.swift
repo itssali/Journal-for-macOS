@@ -1,22 +1,23 @@
 import Sparkle
 import SwiftUI
 
-class UpdateManager: NSObject, ObservableObject {
+class UpdateManager: NSObject, ObservableObject, SPUUpdaterDelegate {
     private var updater: SPUUpdater
     private var automaticCheckEnabled: Bool
     private var controller: SPUStandardUpdaterController
     
     @Published var canCheckForUpdates = false
+    @Published var updateError: String?
     
     override init() {
-        // Create the updater controller with self as the delegate
         controller = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
         updater = controller.updater
         automaticCheckEnabled = true
         
         super.init()
         
-        // Configure the updater
+        updater.delegate = self
+        
         updater.publisher(for: \.canCheckForUpdates)
             .receive(on: DispatchQueue.main)
             .assign(to: &$canCheckForUpdates)
@@ -24,5 +25,16 @@ class UpdateManager: NSObject, ObservableObject {
     
     func checkForUpdates() {
         updater.checkForUpdates()
+    }
+    
+    func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
+        print("Update error: \(error.localizedDescription)")
+        self.updateError = error.localizedDescription
+    }
+    
+    func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
+        DispatchQueue.main.async {
+            self.canCheckForUpdates = true
+        }
     }
 }
