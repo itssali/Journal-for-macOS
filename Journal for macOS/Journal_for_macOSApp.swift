@@ -18,6 +18,10 @@ struct Journal_for_macOSApp: App {
         class UpdaterDelegate: NSObject, SPUUpdaterDelegate {
             func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
                 print("Found valid update: \(item.displayVersionString)")
+                // Add more version details
+                print("Update version details:")
+                print("- Display version: \(item.displayVersionString)")
+                print("- Version string: \(item.versionString)")
             }
             
             func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
@@ -31,10 +35,11 @@ struct Journal_for_macOSApp: App {
         let delegate = UpdaterDelegate()
         updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: delegate, userDriverDelegate: nil)
         
-        // Print current version and feed info
-        if let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
-            print("Current app version: \(currentVersion)")
-        }
+        // Print all version info
+        let bundle = Bundle.main
+        print("App version details:")
+        print("- CFBundleShortVersionString: \(bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "not set")")
+        print("- CFBundleVersion: \(bundle.object(forInfoDictionaryKey: "CFBundleVersion") ?? "not set")")
         print("Feed URL: \(updaterController.updater.feedURL?.absoluteString ?? "No feed URL")")
         
         // Enable system logging for Sparkle
