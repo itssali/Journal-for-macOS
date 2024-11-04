@@ -10,11 +10,11 @@
                     <li>✨ Initial release</li>
                 </ul>
             ]]></description>
-            <pubDate>Mon, 04 Nov 2024 22:46:24 +0000</pubDate>
+            <pubDate>Mon, 04 Nov 2024 23:04:58 +0000</pubDate>
             <sparkle:version>1.0.1</sparkle:version>
             <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3259119" type="application/octet-stream" sparkle:edSignature="nEEYlHbTKS5tZdkA9RECeFOwspfZIbs98kPRO073vgWj57EVsHBNO3Gy5Y1pkGF4hIkfL8GkbASuEXX3oc4jDg=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3259118" type="application/octet-stream" sparkle:edSignature="nEEYlHbTKS5tZdkA9RECeFOwspfZIbs98kPRO073vgWj57EVsHBNO3Gy5Y1pkGF4hIkfL8GkbASuEXX3oc4jDg=="/>
         </item>
     </channel>
 </rss>
