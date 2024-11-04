@@ -3,12 +3,19 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.0.2</title>
-            <pubDate>Mon, 04 Nov 2024 23:29:32 +0200</pubDate>
-            <sparkle:version>1.0.2</sparkle:version>
-            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <title>1.0.1</title>
+            <description><![CDATA[
+                <h2>What's New</h2>
+                <ul>
+                    <li>✨ Initial release</li>
+                </ul>
+            ]]></description>
+            <pubDate>Mon, 04 Nov 2024 22:46:24 +0000</pubDate>
+            <sparkle:version>1.0.1</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="1735017" type="application/octet-stream" sparkle:edSignature="2JAgLvvcx85U8Vjjwe+qeNjRT6R7eFf6IvWhXCRWRAO38eF+Yb9a2dhmTuxkAGJoNTDN02MG2Wkvpvf4dnAIDw=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3259119" type="application/octet-stream" sparkle:edSignature="nEEYlHbTKS5tZdkA9RECeFOwspfZIbs98kPRO073vgWj57EVsHBNO3Gy5Y1pkGF4hIkfL8GkbASuEXX3oc4jDg=="/>
         </item>
     </channel>
 </rss>
+
