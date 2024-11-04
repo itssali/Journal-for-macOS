@@ -21,22 +21,34 @@ class UpdateManager: NSObject, ObservableObject, SPUUpdaterDelegate {
     override init() {
         currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
         
-        // Create temporary instances
-        let tempController = SPUStandardUpdaterController(
+        // Create controller with proper installation setup
+        let hostBundle = Bundle.main
+        let applicationPath = hostBundle.bundlePath as NSString
+        let parentPath = applicationPath.deletingLastPathComponent
+        let installationPath = parentPath as NSString
+        
+        controller = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
-            userDriverDelegate: nil
+            userDriverDelegate: nil,
+            installerInformation: SPUInstallationInfo(
+                bundlePath: hostBundle.bundlePath,
+                installationPath: installationPath as String
+            )
         )
-        updater = tempController.updater
-        controller = tempController
+        updater = controller.updater
         
         super.init()
         
-        // Now set the delegate
+        // Set delegate after super.init()
         controller = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: self,
-            userDriverDelegate: nil
+            userDriverDelegate: nil,
+            installerInformation: SPUInstallationInfo(
+                bundlePath: hostBundle.bundlePath,
+                installationPath: installationPath as String
+            )
         )
         updater = controller.updater
         
