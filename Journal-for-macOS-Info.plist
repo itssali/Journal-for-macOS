@@ -2,17 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SUAllowsAutomaticUpdates</key>
-	<true/>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
 	<key>SUFeedURL</key>
 	<string>https://raw.githubusercontent.com/itssali/journal-for-macos/main/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>zdeGWEEIjIZuH+GQ5Sw0rdWwNSX3DaRBvqMtaEs5UMM=</string>
-	<key>CFBundleVersion</key>
-	<string>4</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0.4</string>
 </dict>
 </plist>

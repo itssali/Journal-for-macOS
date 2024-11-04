@@ -1,92 +1,27 @@
-import Sparkle
 import SwiftUI
+import Sparkle
 
-class UpdateManager: NSObject, ObservableObject, SPUUpdaterDelegate {
-    private var updater: SPUUpdater
-    private var controller: SPUStandardUpdaterController
+final class UpdateManager: ObservableObject {
+    private let updaterController: SPUStandardUpdaterController
+    @Published private(set) var canCheckForUpdates = false
     
-    @Published var canCheckForUpdates = false
-    @Published var updateError: String?
-    @Published var lastUpdateCheckDate: Date?
-    @Published var currentVersion: String
-    @Published var updateStatus: UpdateStatus = .noUpdates
-    
-    enum UpdateStatus {
-        case noUpdates
-        case checking
-        case available(version: String)
-        case error(String)
-    }
-    
-    override init() {
-        currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
-        
-        // Create controller with proper installation setup
-        let hostBundle = Bundle.main
-        let applicationPath = hostBundle.bundlePath as NSString
-        let parentPath = applicationPath.deletingLastPathComponent
-        let installationPath = parentPath as NSString
-        
-        controller = SPUStandardUpdaterController(
+    init() {
+        // If you want to start the updater manually, pass false to startingUpdater and call .startUpdater() later
+        updaterController = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
-            userDriverDelegate: nil,
-            installerInformation: SPUInstallationInfo(
-                bundlePath: hostBundle.bundlePath,
-                installationPath: installationPath as String
-            )
+            userDriverDelegate: nil
         )
-        updater = controller.updater
         
-        super.init()
+        // Automatically check for updates
+        updaterController.updater.automaticallyChecksForUpdates = true
         
-        // Set delegate after super.init()
-        controller = SPUStandardUpdaterController(
-            startingUpdater: true,
-            updaterDelegate: self,
-            userDriverDelegate: nil,
-            installerInformation: SPUInstallationInfo(
-                bundlePath: hostBundle.bundlePath,
-                installationPath: installationPath as String
-            )
-        )
-        updater = controller.updater
-        
-        // Configure publishers
-        updater.publisher(for: \.canCheckForUpdates)
-            .receive(on: DispatchQueue.main)
+        // Bind the published property to the updater controller
+        updaterController.updater.publisher(for: \.canCheckForUpdates)
             .assign(to: &$canCheckForUpdates)
-            
-        updater.publisher(for: \.lastUpdateCheckDate)
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$lastUpdateCheckDate)
     }
     
     func checkForUpdates() {
-        updateStatus = .checking
-        updater.checkForUpdates()
-    }
-    
-    // MARK: - SPUUpdaterDelegate
-    func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
-        DispatchQueue.main.async {
-            self.updateStatus = .available(version: item.displayVersionString)
-        }
-    }
-    
-    func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
-        DispatchQueue.main.async {
-            self.updateStatus = .noUpdates
-            self.canCheckForUpdates = true
-        }
-    }
-    
-    func updater(_ updater: SPUUpdater, failedToDownloadUpdate item: SUAppcastItem, error: Error) {
-        DispatchQueue.main.async {
-            print("Download error: \(error.localizedDescription)")
-            print("Failed URL: \(item.fileURL?.absoluteString ?? "No URL")")
-            self.updateError = error.localizedDescription
-            self.updateStatus = .error(error.localizedDescription)
-        }
+        updaterController.checkForUpdates(nil)
     }
 }
