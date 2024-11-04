@@ -18,8 +18,9 @@
                 url="https://github.com/itssali/journal-for-macos/releases/download/v1.0.1/Journal.for.macOS.zip" 
                 sparkle:version="1.0.1"
                 sparkle:shortVersionString="1.0.1"
+                length="1741960"
                 type="application/octet-stream"
-                sparkle:edSignature="SIGNATURE_WILL_GO_HERE" />
+                sparkle:edSignature="JiOuLBk0yJLGPgjXaE5AMzQnI7h1cBeR2cAYyRA7x68411dEve2AYMAr9zBLgZGcvdiGviX3NbEkEPD5UBd/Dg==" />
         </item>
     </channel>
 </rss>
