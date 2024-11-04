@@ -38,5 +38,7 @@
 		<string>(allow mach-lookup (global-name-regex #"^org.sparkle-project."))</string>
 		<string>(allow mach-lookup (global-name-regex #"^NasserInc.Journal-for-macOS$"))</string>
 	</array>
+	<key>com.apple.security.network.server</key>
+	<true/>
 </dict>
 </plist>
