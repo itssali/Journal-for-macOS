@@ -5,7 +5,7 @@
         <item>
             <title>1.0.4</title>
             <pubDate>Mon, 04 Nov 2024 18:08:44 +0200</pubDate>
-            <sparkle:version>1</sparkle:version>
+            <sparkle:version>2</sparkle:version>
             <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
             <enclosure url="https://raw.githubusercontent.com/itssali/journal-for-macos/main/Journal.for.macOS.zip" length="1751669" type="application/octet-stream" sparkle:edSignature="qyHcnYhFBfI24yG72WQhoWlITCVn8ep689e0joBsN5MDjM+uDv6srY8PAwECMPP+n+g7GW4f40Y+XzLVztyhAA=="/>
