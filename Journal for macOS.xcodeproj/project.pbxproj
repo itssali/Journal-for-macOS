@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */; };
-		561605FD2CD51BCD001D16F2 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 561605FC2CD51BCD001D16F2 /* Lottie */; };
+		56E9DDC42CD8FC3B00433643 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 56E9DDC32CD8FC3B00433643 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */,
-				561605FD2CD51BCD001D16F2 /* Lottie in Frameworks */,
+				56E9DDC42CD8FC3B00433643 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +73,7 @@
 			name = "Journal for macOS";
 			packageProductDependencies = (
 				561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */,
-				561605FC2CD51BCD001D16F2 /* Lottie */,
+				56E9DDC32CD8FC3B00433643 /* Sparkle */,
 			);
 			productName = "Journal for macOS";
 			productReference = 561605B92CD4F60D001D16F2 /* Journal for macOS.app */;
@@ -105,7 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				56E9DDC22CD8FC3B00433643 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 561605BA2CD4F60D001D16F2 /* Products */;
@@ -271,6 +271,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Journal-for-macOS-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -300,6 +301,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Journal-for-macOS-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -346,12 +348,12 @@
 				minimumVersion = 1.3.0;
 			};
 		};
-		561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+		56E9DDC22CD8FC3B00433643 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.0;
+				minimumVersion = 2.6.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -362,10 +364,10 @@
 			package = 561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = SwiftUIIntrospect;
 		};
-		561605FC2CD51BCD001D16F2 /* Lottie */ = {
+		56E9DDC32CD8FC3B00433643 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 561605FB2CD51BCD001D16F2 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
+			package = 56E9DDC22CD8FC3B00433643 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
