@@ -21,15 +21,24 @@ class UpdateManager: NSObject, ObservableObject, SPUUpdaterDelegate {
     override init() {
         currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
         
-        // Initialize controller with self as delegate
-        controller = SPUStandardUpdaterController(
+        // Create temporary instances
+        let tempController = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
             userDriverDelegate: nil
         )
-        updater = controller.updater
+        updater = tempController.updater
+        controller = tempController
         
         super.init()
+        
+        // Now set the delegate
+        controller = SPUStandardUpdaterController(
+            startingUpdater: true,
+            updaterDelegate: self,
+            userDriverDelegate: nil
+        )
+        updater = controller.updater
         
         // Configure publishers
         updater.publisher(for: \.canCheckForUpdates)
@@ -62,6 +71,8 @@ class UpdateManager: NSObject, ObservableObject, SPUUpdaterDelegate {
     
     func updater(_ updater: SPUUpdater, failedToDownloadUpdate item: SUAppcastItem, error: Error) {
         DispatchQueue.main.async {
+            print("Download error: \(error.localizedDescription)")
+            print("Failed URL: \(item.fileURL?.absoluteString ?? "No URL")")
             self.updateError = error.localizedDescription
             self.updateStatus = .error(error.localizedDescription)
         }
