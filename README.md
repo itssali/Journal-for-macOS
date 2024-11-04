@@ -3,7 +3,7 @@
   <h1>Journal for macOS</h1>
   <p>A native journaling app for macOS inspired by Apple's Journal app for iOS</p>
   <p>
-    <img src="https://img.shields.io/badge/Version-1.0.1-blue.svg" />
+    <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" />
     <img src="https://img.shields.io/badge/Platform-macOS%2013+-lightgrey.svg" />
     <img src="https://img.shields.io/badge/Swift-5.9-orange.svg" />
   </p>
