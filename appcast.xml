@@ -8,7 +8,7 @@
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/itssali/journal-for-macos/main/Journal%20for%20macOS.zip" length="1751692" type="application/octet-stream" sparkle:edSignature="xFgRAS90Z+acACvbWojfS2enk5RvgwyyV+4bmc01ht3mnDpbugqBgm7G5c1/A7CbVt2U2LazPjo7ABh/eBCIBw=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/download/v1.0.4/Journal.for.macOS.zip" length="1751692" type="application/octet-stream" sparkle:edSignature="xFgRAS90Z+acACvbWojfS2enk5RvgwyyV+4bmc01ht3mnDpbugqBgm7G5c1/A7CbVt2U2LazPjo7ABh/eBCIBw=="/>
         </item>
     </channel>
 </rss>
