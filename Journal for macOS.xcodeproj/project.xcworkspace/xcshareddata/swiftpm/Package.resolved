@@ -1,13 +1,13 @@
 {
-  "originHash" : "14eb6c58d5f6cdcd321e48df1e559c132bb257986ec2e1a265cb6de8e1e73925",
+  "originHash" : "9a2a852ea83a25b026ef3507b2e36709a2522b6be0f34b9f85335d6088a12fae",
   "pins" : [
     {
-      "identity" : "lottie-ios",
+      "identity" : "sparkle",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "fe4c6fe3a0aa66cdeb51d549623c82ca9704b9a5",
-        "version" : "4.5.0"
+        "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
+        "version" : "2.6.4"
       }
     },
     {
