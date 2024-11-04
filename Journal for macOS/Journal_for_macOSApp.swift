@@ -10,20 +10,22 @@ import Sparkle
 
 @main
 struct Journal_for_macOSApp: App {
-    @StateObject private var updateManager = UpdateManager()
+    
+    private let updaterController: SPUStandardUpdaterController
+    
+    init() {
+        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(after: .appInfo) {
-                Button("Check for Updates...") {
-                    updateManager.checkForUpdates()
-                }
-                .disabled(!updateManager.canCheckForUpdates)
+                CheckForUpdatesView(updater: updaterController.updater)
             }
         }
+        .windowStyle(.hiddenTitleBar)
     }
 }
