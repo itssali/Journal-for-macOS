@@ -3,18 +3,29 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.0.1</title>
+            <title>1.0.2</title>
             <description><![CDATA[
-                <h2>What's New</h2>
+                <h2>New Features</h2>
                 <ul>
-                    <li>✨ Initial release</li>
+            <li>Added pin functionality to keep important entries at the top</li>
+                    <li>Enhanced date management with date picker in entry forms</li>
                 </ul>
-            ]]></description>
-            <pubDate>Mon, 04 Nov 2024 23:04:58 +0000</pubDate>
-            <sparkle:version>1.0.1</sparkle:version>
-            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+                <h2>Improvements</h2>
+                <ul>
+                    <li>Better month grouping and sorting</li>
+                    <li>Improved visual spacing and consistency</li>
+                </ul>
+                <h2>Bug Fixes</h2>
+                <ul>
+            <li>Fixed entry sorting and display order</li>
+            <li>Improved visual consistency in the list view</li>
+            </ul>
+        ]]></description>
+            <pubDate>Tue, 05 Nov 2024 16:04:48 +0000</pubDate>
+            <sparkle:version>1.0.2</sparkle:version>
+            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3259118" type="application/octet-stream" sparkle:edSignature="nEEYlHbTKS5tZdkA9RECeFOwspfZIbs98kPRO073vgWj57EVsHBNO3Gy5Y1pkGF4hIkfL8GkbASuEXX3oc4jDg=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3276346" type="application/octet-stream" sparkle:edSignature="nEEYlHbTKS5tZdkA9RECeFOwspfZIbs98kPRO073vgWj57EVsHBNO3Gy5Y1pkGF4hIkfL8GkbASuEXX3oc4jDg=="/>
         </item>
     </channel>
 </rss>

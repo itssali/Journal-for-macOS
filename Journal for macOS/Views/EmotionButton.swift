@@ -28,7 +28,9 @@ struct EmotionButton: View {
                             lineWidth: 1
                         )
                 )
+                .scaleEffect(isSelected ? 1.05 : 1.0)
         }
         .buttonStyle(.plain)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
     }
-} 
+}
