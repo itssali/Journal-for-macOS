@@ -9,15 +9,15 @@ struct EditEntryView: View {
     @State private var content: String
     @State private var selectedEmotions: Set<String>
     @State private var showingAnimation = false
-    
-    let emotions = ["Happy", "Sad", "Anxious", "Excited", "Angry", "Peaceful"]
+    @State private var selectedDate: Date
     
     init(entry: Binding<JournalEntry>, onDismiss: @escaping () -> Void) {
-        _entry = entry
-        _title = State(initialValue: entry.wrappedValue.title)
-        _content = State(initialValue: entry.wrappedValue.content)
-        _selectedEmotions = State(initialValue: Set(entry.wrappedValue.emotions))
+        self._entry = entry
         self.onDismiss = onDismiss
+        self._title = State(initialValue: entry.wrappedValue.title)
+        self._content = State(initialValue: entry.wrappedValue.content)
+        self._selectedDate = State(initialValue: entry.wrappedValue.date)
+        self._selectedEmotions = State(initialValue: Set(entry.wrappedValue.emotions))
     }
     
     var body: some View {
@@ -40,10 +40,12 @@ struct EditEntryView: View {
                             id: entry.id,
                             title: title,
                             content: content,
-                            date: entry.date,
+                            date: selectedDate,
                             emotions: Array(selectedEmotions),
                             tags: entry.tags,
-                            wordCount: content.split(separator: " ").count
+                            wordCount: content.split(separator: " ").count,
+                            isEditing: false,
+                            isPinned: entry.isPinned
                         )
                         entry = updatedEntry
                         onDismiss()
@@ -60,25 +62,11 @@ struct EditEntryView: View {
             CustomTextEditor(placeholder: "Content", text: $content)
                 .padding(.horizontal)
             
-            VStack(alignment: .leading) {
-                Text("How are you feeling?")
-                    .font(.headline)
-                FlowLayout(spacing: 8) {
-                    ForEach(emotions, id: \.self) { emotion in
-                        EmotionButton(
-                            emotion: emotion,
-                            isSelected: selectedEmotions.contains(emotion)
-                        ) {
-                            if selectedEmotions.contains(emotion) {
-                                selectedEmotions.remove(emotion)
-                            } else {
-                                selectedEmotions.insert(emotion)
-                            }
-                        }
-                    }
-                }
-            }
-            .padding()
+            EmotionSelectionView(selectedEmotions: $selectedEmotions)
+            
+            DatePicker("Date", selection: $selectedDate, displayedComponents: [.date])
+                .padding(.horizontal)
+                .datePickerStyle(.field)
             
             Spacer()
         }

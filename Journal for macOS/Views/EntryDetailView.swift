@@ -5,11 +5,13 @@ struct EntryDetailView: View {
     let onUpdate: (JournalEntry) -> Void
     @State private var isEditing = false
     @State private var editingEntry: JournalEntry?
+    @State private var selectedDate: Date
     
     init(entry: Binding<JournalEntry?>, onUpdate: @escaping (JournalEntry) -> Void) {
         self._entry = entry
         self.onUpdate = onUpdate
         self._editingEntry = State(initialValue: entry.wrappedValue)
+        self._selectedDate = State(initialValue: entry.wrappedValue?.date ?? Date())
     }
     
     var body: some View {

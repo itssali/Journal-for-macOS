@@ -7,10 +7,6 @@ struct NewEntryView: View {
     @State private var title = ""
     @State private var content = ""
     @State private var selectedEmotions: Set<String> = []
-    @State private var showingSaveAnimation = false
-    @State private var showingAnimation = false
-    
-    let emotions = ["Happy", "Sad", "Anxious", "Excited", "Angry", "Peaceful"]
     
     var body: some View {
         VStack(spacing: 20) {
@@ -46,25 +42,7 @@ struct NewEntryView: View {
             CustomTextEditor(placeholder: "Content", text: $content)
                 .padding(.horizontal)
             
-            VStack(alignment: .leading) {
-                Text("How are you feeling?")
-                    .font(.headline)
-                FlowLayout(spacing: 8) {
-                    ForEach(emotions, id: \.self) { emotion in
-                        EmotionButton(
-                            emotion: emotion,
-                            isSelected: selectedEmotions.contains(emotion)
-                        ) {
-                            if selectedEmotions.contains(emotion) {
-                                selectedEmotions.remove(emotion)
-                            } else {
-                                selectedEmotions.insert(emotion)
-                            }
-                        }
-                    }
-                }
-            }
-            .padding()
+            EmotionSelectionView(selectedEmotions: $selectedEmotions)
             
             Spacer()
         }

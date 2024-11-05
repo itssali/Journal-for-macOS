@@ -55,6 +55,8 @@ struct Journal_for_macOSApp: App {
                 CheckForUpdatesView(updater: updaterController.updater)
             }
         }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 1000, height: 700)
         .windowStyle(.hiddenTitleBar)
     }
 }

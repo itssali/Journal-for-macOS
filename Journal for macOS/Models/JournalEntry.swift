@@ -10,6 +10,7 @@ struct JournalEntry: Identifiable, Codable, Equatable {
     let tags: [String]
     let wordCount: Int
     var isEditing: Bool = false
+    var isPinned: Bool = false
     
     static var empty: JournalEntry {
         JournalEntry(id: UUID(), title: "", content: "", date: Date(), emotions: [], tags: [], wordCount: 0)
@@ -23,7 +24,8 @@ struct JournalEntry: Identifiable, Codable, Equatable {
         lhs.emotions == rhs.emotions &&
         lhs.tags == rhs.tags &&
         lhs.wordCount == rhs.wordCount &&
-        lhs.isEditing == rhs.isEditing
+        lhs.isEditing == rhs.isEditing &&
+        lhs.isPinned == rhs.isPinned
     }
 }
 
@@ -62,5 +64,6 @@ extension JournalEntry {
         self.tags = tags
         self.wordCount = wordCount
         self.isEditing = false
+        self.isPinned = false
     }
 }
