@@ -21,11 +21,11 @@
                     <li>Improved visual consistency in the list view</li>
                 </ul>
         ]]></description>
-            <pubDate>Wed, 06 Nov 2024 18:07:58 +0000</pubDate>
+            <pubDate>Wed, 06 Nov 2024 20:14:46 +0000</pubDate>
             <sparkle:version>1.1.0</sparkle:version>
             <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313357" type="application/octet-stream" sparkle:edSignature="MTrHJa+vwdhktRyUj7c9dBc2VJgcQrA9Q7Y8tZnD4Oi9jzLAjmBNhGdR/m/IGrAzKzFp0swevHzUSj6A42AVBA=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313389" type="application/octet-stream" sparkle:edSignature="0imotnfIhjSQx3tsNhhozNl0Z6gDkVZjcvHLWlV6JKPe48iVni5HyqZIJD3OaTt0PcceEowBY52c0U6YZCuJBA=="/>
         </item>
     </channel>
 </rss>
