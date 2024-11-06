@@ -15,76 +15,66 @@ struct EntryDetailView: View {
     }
     
     var body: some View {
-        if let editingEntry = editingEntry {
-            ZStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        HStack {
-                            Text(editingEntry.title)
-                                .font(.title)
-                                .fontWeight(.bold)
-                            
-                            Spacer()
-                            
-                            Button(action: { 
-                                entry?.isEditing = true 
-                            }) {
-                                Image(systemName: "pencil")
-                                    .foregroundColor(.secondary)
-                            }
-                            .buttonStyle(.plain)
+        if let currentEntry = entry {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text(currentEntry.title)
+                            .font(.title)
+                            .fontWeight(.bold)
+                        
+                        Spacer()
+                        
+                        Button(action: { 
+                            var updatedEntry = currentEntry
+                            updatedEntry.isEditing = true
+                            entry = updatedEntry
+                        }) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.secondary)
                         }
-                        
-                        Text(formatDate(editingEntry.date))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        FlowLayout(spacing: 8) {
-                            ForEach(editingEntry.emotions, id: \.self) { emotion in
-                                Text(emotion)
-                                    .font(.caption)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(1))
-                                    )
-                            }
-                        }
-                        
-                        Text(editingEntry.content)
-                            .font(.body)
-                            .lineSpacing(8)
+                        .buttonStyle(.plain)
                     }
-                    .padding(32)
-                }
-                
-                CustomSheet(
-                    isPresented: isEditing,
-                    content: EditEntryView(
-                        entry: Binding(
-                            get: { editingEntry },
-                            set: { newValue in
-                                self.editingEntry = newValue
-                                self.entry = newValue
-                                onUpdate(newValue)
+                    
+                    Text(formatDate(currentEntry.date))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    FlowLayout(spacing: 8) {
+                        ForEach(currentEntry.emotions, id: \.self) { emotion in
+                            Text(emotion)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(1))
+                                )
+                        }
+                    }
+                    
+                    if !currentEntry.attachments.isEmpty {
+                        LazyVGrid(
+                            columns: [GridItem(.adaptive(minimum: 150))],
+                            spacing: 16
+                        ) {
+                            ForEach(currentEntry.attachments) { attachment in
+                                if let image = attachment.image {
+                                    Image(nsImage: image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .cornerRadius(8)
+                                }
                             }
-                        ),
-                        onDismiss: { isEditing = false }
-                    ),
-                    onDismiss: { isEditing = false }
-                )
-            }
-            .onAppear {
-                self.editingEntry = entry
-            }
-            .onChange(of: entry) { oldValue, newValue in
-                if let newValue {
-                    self.editingEntry = newValue
+                        }
+                    }
+                    
+                    Text(currentEntry.content)
+                        .font(.body)
+                        .lineSpacing(8)
                 }
-                
+                .padding(32)
             }
-            
         } else {
             Text("No entry selected")
                 .font(.title2)

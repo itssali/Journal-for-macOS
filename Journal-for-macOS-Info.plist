@@ -8,5 +8,25 @@
 	<string>https://itssali.github.io/Journal-for-macOS/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>zdeGWEEIjIZuH+GQ5Sw0rdWwNSX3DaRBvqMtaEs5UMM=</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>NasserInc.Journal-for-macOS.journal</string>
+			<key>UTTypeDescription</key>
+			<string>Journal Entry</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>journal</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
