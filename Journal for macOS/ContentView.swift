@@ -96,6 +96,7 @@ struct ContentView: View {
                         }
                     }
                 ),
+                selectedEntry: $selectedEntry,
                 onDismiss: { 
                     selectedEntry?.isEditing = false 
                 }

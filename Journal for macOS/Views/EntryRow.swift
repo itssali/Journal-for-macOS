@@ -113,12 +113,9 @@ struct EntryRow: View {
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
-                    storage.entries.remove(at: index)
-                    storage.saveEntries()
-                    if selectedEntry?.id == entry.id {
-                        selectedEntry = nil
-                    }
+                storage.deleteEntry(entry)
+                if selectedEntry?.id == entry.id {
+                    selectedEntry = nil
                 }
             } label: {
                 Label("Delete", systemImage: "trash")

@@ -3,29 +3,29 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.0.2</title>
+            <title>1.1.0</title>
             <description><![CDATA[
                 <h2>New Features</h2>
                 <ul>
-            <li>Added pin functionality to keep important entries at the top</li>
+                    <li>Added list (bulleted and dashed) functionality for body text</li>
                     <li>Enhanced date management with date picker in entry forms</li>
                 </ul>
                 <h2>Improvements</h2>
                 <ul>
-                    <li>Better month grouping and sorting</li>
+                    <li>Smoother animations and transitions</li>
                     <li>Improved visual spacing and consistency</li>
                 </ul>
                 <h2>Bug Fixes</h2>
                 <ul>
-            <li>Fixed entry sorting and display order</li>
-            <li>Improved visual consistency in the list view</li>
-            </ul>
+                    <li>Fixed entry data storage (now appears in settings and can be revealed in Finder)</li>
+                    <li>Improved visual consistency in the list view</li>
+                </ul>
         ]]></description>
-            <pubDate>Tue, 05 Nov 2024 16:04:48 +0000</pubDate>
-            <sparkle:version>1.0.2</sparkle:version>
-            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <pubDate>Wed, 06 Nov 2024 18:07:58 +0000</pubDate>
+            <sparkle:version>1.1.0</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3276346" type="application/octet-stream" sparkle:edSignature="/eipfYcGZzdXr3URJeCy+k3VGGXnxR0eJXW8ledUG0udCgjgaNTn3TWm9vQaYnRq8MHlWwAheNHllElXWr3mDQ=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313357" type="application/octet-stream" sparkle:edSignature="MTrHJa+vwdhktRyUj7c9dBc2VJgcQrA9Q7Y8tZnD4Oi9jzLAjmBNhGdR/m/IGrAzKzFp0swevHzUSj6A42AVBA=="/>
         </item>
     </channel>
 </rss>

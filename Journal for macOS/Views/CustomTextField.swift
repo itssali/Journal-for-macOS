@@ -8,7 +8,7 @@ struct CustomTextField: View {
     var body: some View {
         TextField(placeholder, text: $text)
             .textFieldStyle(.plain)
-            .font(.system(.body))
+            .font(.system(size: 18, weight: .bold))
             .padding(12)
             .background(Color(nsColor: .windowBackgroundColor).opacity(0.5))
             .cornerRadius(8)
@@ -19,7 +19,7 @@ struct CustomTextField: View {
                 
                 let attributes: [NSAttributedString.Key: Any] = [
                     .foregroundColor: NSColor.placeholderTextColor,
-                    .font: NSFont.systemFont(ofSize: 14)
+                    .font: NSFont.systemFont(ofSize: 18, weight: .bold)
                 ]
                 textField.placeholderAttributedString = NSAttributedString(
                     string: placeholder,

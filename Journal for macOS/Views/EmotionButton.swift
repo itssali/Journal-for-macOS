@@ -9,6 +9,7 @@ struct EmotionButton: View {
         Button(action: action) {
             Text(emotion)
                 .font(.system(.body, design: .rounded))
+                .lineLimit(1)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
@@ -29,6 +30,7 @@ struct EmotionButton: View {
                         )
                 )
                 .scaleEffect(isSelected ? 1.05 : 1.0)
+                .fixedSize()
         }
         .buttonStyle(.plain)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
