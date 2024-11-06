@@ -126,6 +126,23 @@ class LocalStorageManager: ObservableObject {
             print("❌ Error deleting entry file: \(error)")
         }
     }
+    
+    func updateEntry(_ oldEntry: JournalEntry, with newEntry: JournalEntry) {
+        // Delete the old file
+        let oldFileName = oldEntry.title.replacingOccurrences(of: " ", with: "_") + ".journal"
+        let oldFileURL = storageURL.appendingPathComponent(oldFileName)
+        
+        // Remove old file
+        try? FileManager.default.removeItem(at: oldFileURL)
+        
+        // Save new entry
+        saveEntry(newEntry)
+        
+        // Update in-memory array
+        if let index = entries.firstIndex(where: { $0.id == oldEntry.id }) {
+            entries[index] = newEntry
+        }
+    }
 }
 
 extension UTType {

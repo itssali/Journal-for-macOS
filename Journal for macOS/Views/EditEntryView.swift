@@ -43,19 +43,16 @@ struct EditEntryView: View {
                         onDismiss() 
                     }
                     CustomActionButton("Save", isDisabled: title.isEmpty || content.isEmpty) {
-                        if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
-                            var updatedEntry = entry
-                            updatedEntry.title = title
-                            updatedEntry.content = content
-                            updatedEntry.emotions = Array(selectedEmotions)
-                            updatedEntry.attachments = attachments
-                            updatedEntry.wordCount = content.split(separator: " ").count
-                            updatedEntry.date = selectedDate
-                            
-                            storage.entries[index] = updatedEntry
-                            storage.saveEntries()
-                            entry = updatedEntry  // Update the binding
-                        }
+                        var updatedEntry = entry
+                        updatedEntry.title = title
+                        updatedEntry.content = content
+                        updatedEntry.emotions = Array(selectedEmotions)
+                        updatedEntry.attachments = attachments
+                        updatedEntry.wordCount = content.split(separator: " ").count
+                        updatedEntry.date = selectedDate
+                        
+                        storage.updateEntry(entry, with: updatedEntry)
+                        entry = updatedEntry  // Update the binding
                         onDismiss()
                     }
                 }
