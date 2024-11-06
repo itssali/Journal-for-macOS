@@ -3,7 +3,7 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.1.0</title>
+            <title>1.1.1</title>
             <description><![CDATA[
                 <h2>New Features</h2>
                 <ul>
@@ -21,11 +21,11 @@
                     <li>Improved visual consistency in the list view</li>
                 </ul>
         ]]></description>
-            <pubDate>Wed, 06 Nov 2024 20:14:46 +0000</pubDate>
-            <sparkle:version>1.1.0</sparkle:version>
-            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <pubDate>Wed, 06 Nov 2024 20:17:49 +0000</pubDate>
+            <sparkle:version>1.1.1</sparkle:version>
+            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313389" type="application/octet-stream" sparkle:edSignature="0imotnfIhjSQx3tsNhhozNl0Z6gDkVZjcvHLWlV6JKPe48iVni5HyqZIJD3OaTt0PcceEowBY52c0U6YZCuJBA=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313385" type="application/octet-stream" sparkle:edSignature="AD7zTWMzNBeuIRkj+yAfK8FQpQjIy+/mfO7cOCC4Dva9LA02sbU01DmAtlHOKe0JUcivEbTq6q6zvLDufKOsAg=="/>
         </item>
     </channel>
 </rss>
