@@ -3,29 +3,53 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.1.1</title>
+            <title>1.1.2</title>
             <description><![CDATA[
-                <h2>New Features</h2>
+        <h2>What's New in Journal for macOS 1.1.2</h2>
+        
+        <h3>🚀 New Features</h3>
+        <ul>
+            <li>Added import/export functionality
                 <ul>
-                    <li>Added list (bulleted and dashed) functionality for body text</li>
-                    <li>Enhanced date management with date picker in entry forms</li>
+                    <li>Import .journal files from any folder on your Mac</li>
+                    <li>Export all entries to a selected folder</li>
+                    <li>Automatic duplicate handling during import</li>
                 </ul>
-                <h2>Improvements</h2>
+            </li>
+            <li>Redesigned Settings window with tabbed interface
                 <ul>
-                    <li>Smoother animations and transitions</li>
-                    <li>Improved visual spacing and consistency</li>
+                    <li>General tab for storage and data management</li>
+                    <li>About tab with app information and GitHub link</li>
                 </ul>
-                <h2>Bug Fixes</h2>
+            </li>
+            <li>Added ability to view default storage location in Finder</li>
+        </ul>
+
+        <h3>🐛 Bug Fixes</h3>
+        <ul>
+            <li>Fixed entry editing behavior
                 <ul>
-                    <li>Fixed entry data storage (now appears in settings and can be revealed in Finder)</li>
-                    <li>Improved visual consistency in the list view</li>
+                    <li>Entries can now only be edited through swipe actions or detail view</li>
+                    <li>Removed accidental editing when clicking entries</li>
                 </ul>
-        ]]></description>
-            <pubDate>Wed, 06 Nov 2024 20:17:49 +0000</pubDate>
-            <sparkle:version>1.1.1</sparkle:version>
-            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
+            </li>
+            <li>Fixed file permission issues with iCloud and external drives</li>
+            <li>Improved handling of storage directory access</li>
+        </ul>
+
+        <h3>💅 Improvements</h3>
+        <ul>
+            <li>Better feedback during import/export operations</li>
+            <li>Cleaner settings interface with grouped sections</li>
+            <li>More intuitive navigation between views</li>
+            <li>Enhanced file management system</li>
+        </ul>
+    ]]></description>
+            <pubDate>Sat, 09 Nov 2024 17:24:58 +0000</pubDate>
+            <sparkle:version>1.1.2</sparkle:version>
+            <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3313385" type="application/octet-stream" sparkle:edSignature="AD7zTWMzNBeuIRkj+yAfK8FQpQjIy+/mfO7cOCC4Dva9LA02sbU01DmAtlHOKe0JUcivEbTq6q6zvLDufKOsAg=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3315883" type="application/octet-stream" sparkle:edSignature="RixxOP0Y6ReftcoJ+Tg4NgLSAfsTUAxaT3NgDWi7731qBPpoOIqUb/YL4GGZ7IFitv7CkrN1GzSHQOGq4bznBQ=="/>
         </item>
     </channel>
 </rss>

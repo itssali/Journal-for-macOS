@@ -56,7 +56,7 @@ struct Journal_for_macOSApp: App {
             }
         }
         .windowResizability(.contentSize)
-        .defaultSize(width: 1000, height: 700)
+        .defaultSize(width: 1000, height: 720)
         .windowStyle(.hiddenTitleBar)
         
         Settings {

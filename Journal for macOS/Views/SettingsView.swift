@@ -1,20 +1,58 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+
+struct AboutView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            // App Icon on top
+            Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
+                .resizable()
+                .frame(width: 128, height: 128)
+                .padding(.top, 20)
+            
+            // Main content in Form
+            Form {
+                Section {
+                    VStack(alignment: .center, spacing: 8) {
+                        Text("Journal for macOS")
+                            .font(.headline)
+                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")")
+                            .foregroundColor(.secondary)
+                        Text("© 2024 Ali Nasser")
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .formStyle(.grouped)
+            
+            // GitHub link at bottom
+            Link(destination: URL(string: "https://github.com/itssali/Journal-for-macOS")!) {
+                HStack {
+                    Image(systemName: "link")
+                    Text("GitHub Repository")
+                }
+                .foregroundColor(.blue)
+            }
+            .padding(.bottom, 20)
+        }
+        .frame(width: 500)
+    }
+}
 struct SettingsView: View {
     @StateObject private var storage = LocalStorageManager.shared
-    @State private var showingFolderPicker = false
-    @State private var showingExportDialog = false
     @State private var showingImportPicker = false
-    @State private var selectedTab = "Storage"
+    @State private var showingExportPicker = false
+    @State private var selectedTab = "General"
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Storage Tab
+            // General Tab
             Form {
                 Section("Storage Location") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Current Location:")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Default Directory:")
                             .foregroundColor(.secondary)
                         
                         HStack {
@@ -24,118 +62,72 @@ struct SettingsView: View {
                                 .textSelection(.enabled)
                             
                             Spacer()
-                        }
-                        .padding(8)
-                        .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(6)
-                        
-                        HStack(spacing: 12) {
+                            
                             Button(action: {
                                 NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: storage.storageURL.path)
                             }) {
                                 Label("Open in Finder", systemImage: "folder")
                             }
                         }
-                        .padding(.top, 4)
+                        .padding(8)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
                     }
+                }
+                
+                Section("Data Management") {
+                    VStack(alignment: .center, spacing: 12) {
+                        Button(action: { showingImportPicker.toggle() }) {
+                            Label("Import Entries from Folder", systemImage: "square.and.arrow.down")
+                        }
+                        
+                        Button(action: { showingExportPicker.toggle() }) {
+                            Label("Export All Entries", systemImage: "square.and.arrow.up")
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
             .formStyle(.grouped)
             .tabItem {
-                Label("Storage", systemImage: "folder")
+                Label("General", systemImage: "gear")
             }
-            .tag("Storage")
+            .tag("General")
             
             // About Tab
-            Form {
-                Section("About") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Journal for macOS")
-                            .font(.title)
-                        Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0")")
-                        Text("© 2024 Ali Nasser")
-                        Link("GitHub Repository", destination: URL(string: "https://github.com/itssali/Journal-for-macOS")!)
-                    }
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
                 }
-            }
-            .formStyle(.grouped)
-            .tabItem {
-                Label("About", systemImage: "info.circle")
-            }
-            .tag("About")
+                .tag("About")
         }
-        .frame(width: 500, height: 400)
-        .animation(.easeInOut, value: selectedTab)
+        .frame(width: 500)
         .fileImporter(
-            isPresented: $showingFolderPicker,
-            allowedContentTypes: [UTType(filenameExtension: "folder")!],
+            isPresented: $showingImportPicker,
+            allowedContentTypes: [.folder],
             allowsMultipleSelection: false
         ) { result in
-            handleFolderSelection(result)
+            if case .success(let urls) = result,
+               let url = urls.first {
+                guard url.startAccessingSecurityScopedResource() else {
+                    print("❌ Cannot access the selected location")
+                    return
+                }
+                defer { url.stopAccessingSecurityScopedResource() }
+                
+                do {
+                    try storage.importEntries(from: url)
+                    print("✅ Successfully imported entries from: \(url.path)")
+                } catch {
+                    print("❌ Error importing entries: \(error)")
+                }
+            }
         }
-        .fileImporter(isPresented: $showingImportPicker, allowedContentTypes: [.journal], allowsMultipleSelection: false) { result in
-            handleImportSelection(result)
-        }
-        .fileExporter(isPresented: $showingExportDialog, document: EntryDocument(entries: storage.entries), contentType: .journal) { result in
-            handleExportResult(result)
-        }
-    }
-    
-    private func handleFolderSelection(_ result: Result<[URL], Error>) {
-        print("📁 Folder selection triggered")
-        
-        guard case .success(let urls) = result,
-              let selectedURL = urls.first else {
-            print("❌ No folder selected or error occurred")
-            return
-        }
-        
-        print("📂 Selected folder: \(selectedURL.path)")
-        
-        guard selectedURL.startAccessingSecurityScopedResource() else {
-            print("❌ Failed to access the selected directory")
-            return
-        }
-        defer { selectedURL.stopAccessingSecurityScopedResource() }
-        
-        do {
-            try storage.moveEntriesToNewLocation(selectedURL)
-            print("✅ Successfully moved entries to new location")
-        } catch {
-            print("❌ Error changing storage location: \(error)")
-        }
-    }
-    
-    private func handleImportSelection(_ result: Result<[URL], Error>) {
-        guard case .success(let urls) = result,
-              let selectedURL = urls.first else { return }
-        
-        guard selectedURL.startAccessingSecurityScopedResource() else {
-            print("❌ Failed to access the selected directory")
-            return
-        }
-        defer { selectedURL.stopAccessingSecurityScopedResource() }
-        
-        do {
-            try storage.importEntries(from: selectedURL)
-        } catch {
-            print("❌ Error importing entries: \(error)")
-        }
-    }
-    
-    private func handleExportResult(_ result: Result<URL, Error>) {
-        guard case .success(let selectedURL) = result else { return }
-        
-        guard selectedURL.startAccessingSecurityScopedResource() else {
-            print("❌ Failed to access the selected directory")
-            return
-        }
-        defer { selectedURL.stopAccessingSecurityScopedResource() }
-        
-        do {
-            try storage.exportEntries(to: selectedURL)
-        } catch {
-            print("❌ Error exporting entries: \(error)")
-        }
+        .fileExporter(
+            isPresented: $showingExportPicker,
+            document: EntryDocument(entries: storage.entries),
+            contentType: .journal,
+            defaultFilename: "Journal Entries"
+        ) { _ in }
     }
 }
