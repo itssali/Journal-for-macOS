@@ -3,20 +3,20 @@ import SwiftUIIntrospect
 
 struct EditEntryView: View {
     let onDismiss: () -> Void
-    @StateObject private var storage = LocalStorageManager.shared
+    let storage: LocalStorageManager
     @Binding var entry: JournalEntry
     @Binding var selectedEntry: JournalEntry?
     @State private var title: String
     @State private var content: String
     @State private var selectedEmotions: Set<String>
-    @State private var showingAnimation = false
     @State private var selectedDate: Date
-    @State private var attachments: [ImageAttachment] = []
+    @State private var attachments: [ImageAttachment]
     
     init(entry: Binding<JournalEntry>, selectedEntry: Binding<JournalEntry?>, onDismiss: @escaping () -> Void) {
         self._entry = entry
         self._selectedEntry = selectedEntry
         self.onDismiss = onDismiss
+        self.storage = LocalStorageManager.shared
         self._title = State(initialValue: entry.wrappedValue.title)
         self._content = State(initialValue: entry.wrappedValue.content)
         self._selectedDate = State(initialValue: entry.wrappedValue.date)

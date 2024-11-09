@@ -180,15 +180,19 @@ struct ContentView: View {
     }
     
     private var newEntryButton: some View {
-        Button(action: { showingNewEntry.toggle() }) {
-            Image(systemName: "plus")
-                .font(.title2)
-                .foregroundColor(.white)
-                .frame(width: 44, height: 44)
-                .background(Color(red: 0.37, green: 0.36, blue: 0.90))
-                .clipShape(Circle())
+        ZStack {
+           
+            
+            Button(action: { showingNewEntry.toggle() }) {
+                Image(systemName: "plus")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color(red: 0.37, green: 0.36, blue: 0.90))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
         .padding(.bottom)
     }
     
