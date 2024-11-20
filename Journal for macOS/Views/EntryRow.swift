@@ -89,6 +89,13 @@ struct EntryRow: View {
         )
         .animation(.easeInOut(duration: 0.2), value: selectedEntry?.id)
         .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                var newEntry = entry
+                newEntry.isEditing = false  // Explicitly set isEditing to false
+                selectedEntry = newEntry
+            }
+        }
         .swipeActions(edge: .leading) {
             Button {
                 if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
@@ -109,7 +116,7 @@ struct EntryRow: View {
                 Label(entry.isPinned ? "Unpin" : "Pin", 
                       systemImage: entry.isPinned ? "pin.slash.fill" : "pin.fill")
             }
-            .tint(.yellow)
+            .tint(.yellow.opacity(0.7))
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
@@ -120,11 +127,12 @@ struct EntryRow: View {
             } label: {
                 Label("Delete", systemImage: "trash")
             }
-            .tint(.red)
+            .tint(.red.opacity(0.7))
 
             Button {
-                selectedEntry = entry
-                selectedEntry?.isEditing = true
+                var updatedEntry = entry
+                updatedEntry.isEditing = true
+                selectedEntry = updatedEntry
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
@@ -140,18 +148,18 @@ struct EntryRow: View {
 }
 
 #Preview {
-    @Previewable @State var selectedPreviewEntry: JournalEntry? = nil
     let sampleEntry = JournalEntry(
         id: UUID(),
         title: "My First Entry",
         content: "This is a sample journal entry with multiple lines of text to test how the layout works with longer content. It should show exactly three lines before truncating.",
         date: Date(),
         emotions: ["Happy", "Excited", "Peaceful", "Grateful"],
+        pleasantness: 0.8,
         tags: [],
         wordCount: 27
     )
     
-    return List {
+    List {
         EntryRow(
             entry: sampleEntry,
             selectedEntry: .constant(sampleEntry)  // This one will be highlighted
@@ -164,6 +172,7 @@ struct EntryRow: View {
                 content: "A shorter entry to test different lengths.",
                 date: Date().addingTimeInterval(-86400),
                 emotions: ["Calm", "Focused"],
+                pleasantness: 0.6,
                 tags: [],
                 wordCount: 8
             ),

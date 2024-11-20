@@ -6,31 +6,26 @@ struct StatView: View {
     let value: String
     let iconColor: Color
     
-    init(icon: String, title: String, value: String, iconColor: Color = .blue) {
-        self.icon = icon
-        self.title = title
-        self.value = value
-        self.iconColor = iconColor
-    }
-    
     var body: some View {
-        HStack {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title2)
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Image(icon)
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20)
                     .foregroundColor(iconColor)
                 
-                VStack(spacing: 4) {
-                    Text(value)
-                        .font(.title2)
-                        .fontWeight(.medium)
-                    
-                    Text(title)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Text(value)
+                    .font(.title2)
+                    .fontWeight(.medium)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .center)
+            
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
+        .frame(maxWidth: .infinity)
     }
 }

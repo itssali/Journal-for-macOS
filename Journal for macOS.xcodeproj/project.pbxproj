@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */; };
+		56A884DC2CE663C30055C30D /* Orb in Frameworks */ = {isa = PBXBuildFile; productRef = 56A884DB2CE663C30055C30D /* Orb */; };
+		56D1C5812CE62B7300FCEC2B /* Orb in Frameworks */ = {isa = PBXBuildFile; productRef = 56D1C5802CE62B7300FCEC2B /* Orb */; };
 		56E9DDC42CD8FC3B00433643 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 56E9DDC32CD8FC3B00433643 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -28,7 +30,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56D1C5812CE62B7300FCEC2B /* Orb in Frameworks */,
 				561605F42CD50D0D001D16F2 /* SwiftUIIntrospect in Frameworks */,
+				56A884DC2CE663C30055C30D /* Orb in Frameworks */,
 				56E9DDC42CD8FC3B00433643 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,6 +78,8 @@
 			packageProductDependencies = (
 				561605F32CD50D0D001D16F2 /* SwiftUIIntrospect */,
 				56E9DDC32CD8FC3B00433643 /* Sparkle */,
+				56D1C5802CE62B7300FCEC2B /* Orb */,
+				56A884DB2CE663C30055C30D /* Orb */,
 			);
 			productName = "Journal for macOS";
 			productReference = 561605B92CD4F60D001D16F2 /* Journal for macOS.app */;
@@ -106,6 +112,7 @@
 			packageReferences = (
 				561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 				56E9DDC22CD8FC3B00433643 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				56A884DA2CE663C30055C30D /* XCLocalSwiftPackageReference "../Orb" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 561605BA2CD4F60D001D16F2 /* Products */;
@@ -266,7 +273,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.1.2;
+				CURRENT_PROJECT_VERSION = 1.2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Journal for macOS/Preview Content\"";
 				DEVELOPMENT_TEAM = S3NBQMSSCH;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -280,7 +287,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "NasserInc.Journal-for-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -299,7 +306,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.1.2;
+				CURRENT_PROJECT_VERSION = 1.2.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Journal for macOS/Preview Content\"";
 				DEVELOPMENT_TEAM = S3NBQMSSCH;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -313,7 +320,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "NasserInc.Journal-for-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -344,6 +351,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		56A884DA2CE663C30055C30D /* XCLocalSwiftPackageReference "../Orb" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Orb;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -368,6 +382,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 561605F22CD50D0D001D16F2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = SwiftUIIntrospect;
+		};
+		56A884DB2CE663C30055C30D /* Orb */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Orb;
+		};
+		56D1C5802CE62B7300FCEC2B /* Orb */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Orb;
 		};
 		56E9DDC32CD8FC3B00433643 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
