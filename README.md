@@ -14,7 +14,7 @@
 Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided to create a native macOS version that captures the same elegant simplicity and thoughtful features. This app lets you document your thoughts, track emotions, and reflect on your days - all with a clean, native macOS interface.
 
 <div align="center">
-  <img src="Assets/emotion-orb.gif" width="800" alt="Emotion Orb Selection" />
+  <img src="Assets/pleasantess.gif" width="800" alt="Emotion Orb Selection" />
 </div>
 
 ## ✨ Features
