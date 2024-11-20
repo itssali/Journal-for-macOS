@@ -1,22 +1,8 @@
-import SwiftUI
+//
+//  VisualEffectView.swift
+//  Journal for macOS
+//
+//  Created by Ali Nasser on 15/11/2024.
+//
 
-struct VisualEffectView: NSViewRepresentable {
-    let material: NSVisualEffectView.Material
-    let blendingMode: NSVisualEffectView.BlendingMode
-    
-    init(material: NSVisualEffectView.Material = .sidebar, 
-         blendingMode: NSVisualEffectView.BlendingMode = .behindWindow) {
-        self.material = material
-        self.blendingMode = blendingMode
-    }
-    
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let view = NSVisualEffectView()
-        view.material = material
-        view.blendingMode = blendingMode
-        view.state = .active
-        return view
-    }
-    
-    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
-} 
+import Foundation
