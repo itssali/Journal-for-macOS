@@ -3,7 +3,7 @@
   <h1>Journal for macOS</h1>
   <p>A native journaling app for macOS inspired by Apple's Journal app for iOS</p>
   <p>
-    <img src="https://img.shields.io/badge/Version-1.1.2-blue.svg" />
+    <img src="https://img.shields.io/badge/Version-1.2.0-blue.svg" />
     <img src="https://img.shields.io/badge/Platform-macOS%2013+-lightgrey.svg" />
     <img src="https://img.shields.io/badge/Swift-5.9-orange.svg" />
   </p>
@@ -17,7 +17,7 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 
 - 📝 Clean, distraction-free writing experience
 - 🎨 Beautiful, native macOS design
-- 😊 Track your emotions and moods
+- 😊 Track your emotions with an intuitive Emotion Orb
 - 📊 Insightful writing statistics
 - 🗂 Organized by months
 - 🌙 Supports system appearance
@@ -48,8 +48,8 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 - SwiftUI for the UI
 - UserDefaults for local storage
 - SwiftUI Introspect for native controls
-- Lottie for animations
-- Glur for blur effects
+- Sparkle for automatic updates
+- Orb for intuitive emotion tracking
 
 ## 📝 License
 

@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var showingNewEntry = false
     @State private var selectedEntry: JournalEntry?
+    @State private var isDetailViewVisible = false
     
     // Simple computed properties
     var totalWords: Int {
@@ -68,13 +69,21 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     statsHeader
                     Divider()
+                        .background(Color.white.opacity(0.2))
                     entriesList
                 }
                 .frame(minWidth: 375, maxWidth: 500)
                 
+                
+                
                 detailView
                     .frame(minWidth: 400)
+                    .background(
+                        VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
+                            .ignoresSafeArea()
+                    )
             }
+            
             .frame(minHeight: 650)
             
             CustomSheet(
@@ -97,12 +106,12 @@ struct ContentView: View {
                     }
                 ),
                 selectedEntry: $selectedEntry,
-                onDismiss: { 
-                    selectedEntry?.isEditing = false 
+                onDismiss: {
+                    selectedEntry?.isEditing = false
                 }
             ),
-            onDismiss: { 
-                selectedEntry?.isEditing = false 
+            onDismiss: {
+                selectedEntry?.isEditing = false
             }
         )
     }
@@ -112,39 +121,54 @@ struct ContentView: View {
     private var statsHeader: some View {
         HStack(spacing: 0) {
             StatView(
-                icon: "calendar",
+                icon: "journal",
                 title: "Entries This Year",
                 value: "\(storage.entries.count)",
                 iconColor: Color(red: 0.37, green: 0.36, blue: 0.90)
             )
+            .frame(height: 65)
             .padding(.horizontal, 16)
             
+            Divider()
+                .frame(height: 65)
+            
             StatView(
-                icon: "quote.bubble",
+                icon: "quote",
                 title: "Total Words",
                 value: "\(totalWords)",
                 iconColor: Color(hex: "C06E6E")
             )
+            .frame(height: 65)
             .padding(.horizontal, 16)
             
+            Divider()
+                .frame(height: 65)
+            
             StatView(
-                icon: "calendar.badge.clock",
+                icon: "calendar",
                 title: "Days Journaled",
                 value: "\(journaledDays)",
                 iconColor: Color(red: 0.37, green: 0.36, blue: 0.90)
             )
+            .frame(height: 65)
             .padding(.horizontal, 16)
         }
+        
         .padding(.horizontal)
-        .padding(.vertical, 12)
+        .padding(.vertical, 11)
+        .background(
+            VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+        )
     }
+    
     
     private var entriesList: some View {
         ZStack(alignment: .bottom) {
             List {
                 ForEach(monthGroups, id: \.self) { month in
                     Section(header: Text(month).font(.headline)) {
-                        let entries = month == "Pinned" 
+                        let entries = month == "Pinned"
                             ? storage.entries.filter { $0.isPinned }.sorted { $0.date > $1.date }
                             : storage.entries
                                 .filter { !$0.isPinned && monthString(for: $0.date) == month }
@@ -155,9 +179,7 @@ struct ContentView: View {
                             EntryRow(entry: entry, selectedEntry: $selectedEntry)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        selectedEntry = entry
-                                    }
+                                    selectedEntry = entry
                                 }
                                 .frame(minHeight: 44)
                                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -173,12 +195,17 @@ struct ContentView: View {
                     }
                 }
             }
+            
             .listStyle(.sidebar)
+            .background(
+                VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
+                    .ignoresSafeArea()
+            )
             
             newEntryButton
         }
+        
     }
-    
     private var newEntryButton: some View {
         ZStack {
            
@@ -199,18 +226,30 @@ struct ContentView: View {
     private var detailView: some View {
         Group {
             if selectedEntry != nil {
-                EntryDetailView(entry: $selectedEntry, onUpdate: { updatedEntry in
+                EntryDetailView(entry: $selectedEntry) { updatedEntry in
                     if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
                         storage.entries[index] = updatedEntry
-                        selectedEntry = updatedEntry
+                        self.selectedEntry = updatedEntry
                         storage.saveEntries()
                     }
-                })
+                }
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
             } else {
-                Text("Select an entry to view details")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack {
+                    Text("Select an entry to view")
+                        .font(.title2)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+                        .ignoresSafeArea()
+                )
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
             }
         }
     }
@@ -253,4 +292,5 @@ extension Color {
 
 #Preview {
     ContentView()
+        .frame(width: 920, height: 700)
 }

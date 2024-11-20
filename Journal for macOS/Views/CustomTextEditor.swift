@@ -55,16 +55,35 @@ struct CustomTextEditor: View {
     @State private var textView: NSTextView?
     
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        VStack(alignment: .trailing, spacing: 8) {
+            Menu {
+                Button("Bullet List (•)") {
+                    formatAsList(.bullet)
+                }
+                Button("Dash List (-)") {
+                    formatAsList(.dash)
+                }
+            } label: {
+                Image(systemName: "list.bullet")
+                    .foregroundColor(.secondary)
+                    .padding(8)
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    .cornerRadius(6)
+            }
+            .menuStyle(.borderlessButton)
+            .frame(width: 32, height: 32)
+            .padding(.trailing, 12)
+            
             TextEditor(text: $text)
                 .font(.system(.body))
                 .lineSpacing(2)
                 .scrollContentBackground(.hidden)
-                .padding(.top, 48)
+                .padding(.top, 16)
                 .padding(.horizontal, 12)
                 .background(Color(nsColor: .windowBackgroundColor).opacity(0.5))
                 .cornerRadius(8)
-                .frame(maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal)
                 .introspect(.textEditor) { (nsTextView: NSTextView) in
                     nsTextView.focusRingType = .none
                     nsTextView.backgroundColor = .clear
@@ -74,26 +93,6 @@ struct CustomTextEditor: View {
                     nsTextView.isEditable = true
                     self.textView = nsTextView
                 }
-            
-            HStack(spacing: 8) {
-                Menu {
-                    Button("Bullet List (•)") {
-                        formatAsList(.bullet)
-                    }
-                    Button("Dash List (-)") {
-                        formatAsList(.dash)
-                    }
-                } label: {
-                    Image(systemName: "list.bullet")
-                        .foregroundColor(.secondary)
-                        .padding(8)
-                        .background(Color(nsColor: .windowBackgroundColor))
-                        .cornerRadius(6)
-                }
-                .menuStyle(.borderlessButton)
-                .frame(width: 32, height: 32)
-            }
-            .padding(12)
         }
         .fileImporter(
             isPresented: $showingImagePicker,

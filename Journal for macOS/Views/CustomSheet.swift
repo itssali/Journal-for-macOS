@@ -5,25 +5,41 @@ struct CustomSheet<Content: View>: View {
     let isPresented: Bool
     let content: Content
     let onDismiss: () -> Void
+
+    private func dismiss() {
+        isVisible = false
+        onDismiss()
+    }
     
     var body: some View {
-        ZStack {
-            if isPresented || isVisible {
-                Color.black
-                    .opacity(isVisible ? 0.3 : 0)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        dismiss()
-                    }
-                
-                content
-                    .frame(width: 600, height: 670)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.2), radius: 20)
-                    .opacity(isVisible ? 1 : 0)
-                    .scaleEffect(isVisible ? 1 : 0.95)
+        GeometryReader { geometry in
+            ZStack {
+                if isPresented || isVisible {
+                    Color.black
+                        .opacity(isVisible ? 0.3 : 0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            dismiss()
+                        }
+                    
+                    
+                    content
+                        .frame(width: 600, height: 670)
+                        .background(
+                            VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
+                                .ignoresSafeArea()
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(color: .black.opacity(0.2), radius: 20)
+                        .opacity(isVisible ? 1 : 0)
+                        .scaleEffect(isVisible ? 1 : 0.95)
+                        .position(
+                            x: geometry.size.width / 2,
+                            y: geometry.size.height / 2
+                        )
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.9), value: isVisible)
         .onChange(of: isPresented) { _, newValue in
@@ -36,18 +52,9 @@ struct CustomSheet<Content: View>: View {
             }
         }
     }
-    
-    private func dismiss() {
-        withAnimation {
-            isVisible = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            onDismiss()
-        }
-    }
 }
-
-struct CustomActionButton: View {
+    
+    struct CustomActionButton: View {
     let title: String
     let role: ButtonRole?
     let action: () -> Void

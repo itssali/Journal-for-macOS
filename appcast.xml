@@ -3,54 +3,55 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.1.2</title>
+            <title>1.2.0</title>
             <description><![CDATA[
-        <h2>What's New in Journal for macOS 1.1.2</h2>
+        <h2>What's New in Journal for macOS 1.2.0</h2>
         
-        <h3>🚀 New Features</h3>
+        <h3>🎉 New Features & Improvements</h3>
         <ul>
-            <li>Added import/export functionality
+            <li>Enhanced Emotion Tracking
                 <ul>
-                    <li>Import .journal files from any folder on your Mac</li>
-                    <li>Export all entries to a selected folder</li>
-                    <li>Automatic duplicate handling during import</li>
+                    <li>Introduced the new Emotion Orb interface for more intuitive mood tracking</li>
+                    <li>Smooth, fluid animations for a more engaging experience</li>
+                    <li>Better visual feedback when selecting emotions</li>
                 </ul>
             </li>
-            <li>Redesigned Settings window with tabbed interface
+            <li>Refined Entry Views
                 <ul>
-                    <li>General tab for storage and data management</li>
-                    <li>About tab with app information and GitHub link</li>
+                    <li>Improved layout consistency between new and edit entry views</li>
+                    <li>Enhanced visual harmony across all interfaces</li>
+                    <li>Optimized view transitions and animations</li>
+                    <li>Better padding and alignment in text fields</li>
                 </ul>
             </li>
-            <li>Added ability to view default storage location in Finder</li>
+            <li>Performance Improvements
+                <ul>
+                    <li>Removed unnecessary animations for smoother entry switching</li>
+                    <li>Optimized view transitions throughout the app</li>
+                    <li>Enhanced overall app responsiveness</li>
+                </ul>
+            </li>
+            <li>Visual Polish
+                <ul>
+                    <li>Restored transparent backgrounds for better visual consistency</li>
+                    <li>Improved field alignments and padding</li>
+                    <li>Better visual hierarchy in entry views</li>
+                </ul>
+            </li>
         </ul>
 
         <h3>🐛 Bug Fixes</h3>
         <ul>
-            <li>Fixed entry editing behavior
-                <ul>
-                    <li>Entries can now only be edited through swipe actions or detail view</li>
-                    <li>Removed accidental editing when clicking entries</li>
-                </ul>
-            </li>
-            <li>Fixed file permission issues with iCloud and external drives</li>
-            <li>Improved handling of storage directory access</li>
-        </ul>
-
-        <h3>💅 Improvements</h3>
-        <ul>
-            <li>Better feedback during import/export operations</li>
-            <li>Cleaner settings interface with grouped sections</li>
-            <li>More intuitive navigation between views</li>
-            <li>Enhanced file management system</li>
+            <li>Fixed field width consistency issues</li>
+            <li>Corrected emotion selection parameter naming</li>
+            <li>Various minor UI and performance improvements</li>
         </ul>
     ]]></description>
-            <pubDate>Sat, 09 Nov 2024 17:24:58 +0000</pubDate>
-            <sparkle:version>1.1.2</sparkle:version>
-            <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
+            <pubDate>Wed, 20 Nov 2024 18:20:30 +0000</pubDate>
+            <sparkle:version>1.2.0</sparkle:version>
+            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3315883" type="application/octet-stream" sparkle:edSignature="RixxOP0Y6ReftcoJ+Tg4NgLSAfsTUAxaT3NgDWi7731qBPpoOIqUb/YL4GGZ7IFitv7CkrN1GzSHQOGq4bznBQ=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3393285" type="application/octet-stream" sparkle:edSignature="9/LCUCjNkceZRuF5WqacbQS1ZvmoXbf20dtE1731IvxCDu563Zs1Bv3zhFiSPZxJUUzIxSRqS/U1S0tS9AW0Aw=="/>
         </item>
     </channel>
 </rss>
-

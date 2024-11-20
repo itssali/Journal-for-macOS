@@ -5,39 +5,44 @@ import UniformTypeIdentifiers
 struct AboutView: View {
     var body: some View {
         VStack(spacing: 20) {
-            // App Icon on top
             Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                 .resizable()
                 .frame(width: 128, height: 128)
-                .padding(.top, 20)
+                .padding(.top, 16)
             
-            // Main content in Form
-            Form {
-                Section {
-                    VStack(alignment: .center, spacing: 8) {
-                        Text("Journal for macOS")
-                            .font(.headline)
-                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")")
-                            .foregroundColor(.secondary)
-                        Text("© 2024 Ali Nasser")
-                            .foregroundColor(.secondary)
+            VStack(spacing: 8) {
+                Text("Journal for macOS")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")")
+                    .foregroundColor(.secondary)
+                Text("© 2024 Ali Nasser")
+                    .foregroundColor(.secondary)
+            }
+            
+            VStack(spacing: 16) {
+                Link(destination: URL(string: "https://github.com/itssali/Journal-for-macOS")!) {
+                    HStack {
+                        Image(systemName: "link")
+                        Text("GitHub Repository")
                     }
-                    .frame(maxWidth: .infinity)
+                }
+                
+                Link(destination: URL(string: "mailto:ali@alinasser.info")!) {
+                    HStack {
+                        Image(systemName: "envelope")
+                        Text("Suggestions & Feedback")
+                    }
                 }
             }
-            .formStyle(.grouped)
-            
-            // GitHub link at bottom
-            Link(destination: URL(string: "https://github.com/itssali/Journal-for-macOS")!) {
-                HStack {
-                    Image(systemName: "link")
-                    Text("GitHub Repository")
-                }
-                .foregroundColor(.blue)
-            }
-            .padding(.bottom, 20)
+            .padding(.top, 8)
         }
-        .frame(width: 500)
+        .frame(maxWidth: .infinity)
+        .frame(height: 380)
+        .background(
+            VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+        )
     }
 }
 struct SettingsView: View {
@@ -89,19 +94,26 @@ struct SettingsView: View {
                 }
             }
             .formStyle(.grouped)
+            .background(
+                VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
+                    .ignoresSafeArea()
+            )
             .tabItem {
                 Label("General", systemImage: "gear")
             }
             .tag("General")
             
-            // About Tab
             AboutView()
                 .tabItem {
                     Label("About", systemImage: "info.circle")
                 }
                 .tag("About")
         }
-        .frame(width: 500)
+        .frame(width: 500, height: 400)
+        .background(
+            VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+        )
         .fileImporter(
             isPresented: $showingImportPicker,
             allowedContentTypes: [.folder],
