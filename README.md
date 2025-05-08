@@ -3,7 +3,7 @@
   <h1>Journal for macOS</h1>
   <p>A native journaling app for macOS inspired by Apple's Journal app for iOS</p>
   <p>
-    <img src="https://img.shields.io/badge/Version-1.2.0-blue.svg" />
+    <img src="https://img.shields.io/badge/Version-1.3.0-blue.svg" />
     <img src="https://img.shields.io/badge/Platform-macOS%2013+-lightgrey.svg" />
     <img src="https://img.shields.io/badge/Swift-5.9-orange.svg" />
   </p>
@@ -16,6 +16,30 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 <div align="center">
   <img src="Assets/pleasantess.gif" width="800" alt="Emotion Orb Selection" />
 </div>
+
+## 📢 Latest Release - v1.3.0
+
+### Quality of Life Improvements
+
+#### Enhanced Onboarding Experience
+- Improved full-screen onboarding presentation
+- Properly centered page indicators for better visual balance
+- Smoother transitions between onboarding screens
+
+#### UI Refinements
+- Consistent background treatment for greeting and stats section
+- Better visual integration between UI components
+- Improved window handling with proper toolbar interactions
+
+#### Interaction Enhancements
+- Fixed issues with custom sheet interactions
+- Enhanced emotion selection interface responsiveness
+- Smoother variable blur effect implementation
+
+#### General Polish
+- Fixed window closing issues related to settings button
+- Consolidated settings functionality in the toolbar
+- Overall improved UI consistency and behavior
 
 ## ✨ Features
 
