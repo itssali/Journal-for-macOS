@@ -1,0 +1,59 @@
+name: Create Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.3.0, v20.15.10
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        
+      - name: Prepare release assets
+        run: |
+          # Create build directory for GitHub release assets
+          mkdir -p build
+          
+          # Copy the zip file as an artifact for the release
+          echo "Using zip file from local repository..."
+          cp "Journal.for.macOS.zip" build/ || echo "⚠️ Zip file not found in repository root"
+          
+      - name: Extract and convert release notes from appcast.xml
+        id: extract_notes
+        run: |
+          # Extract CDATA content
+          NOTES_HTML=$(awk '/<description><!\[CDATA\[/,/\]\]><\/description>/' appcast.xml | sed -e 's/<description><!\[CDATA\[//' -e 's/\]\]><\/description>//')
+          
+          # Convert HTML to Markdown format for GitHub
+          # Simple conversion of basic elements
+          NOTES_MD=$(echo "$NOTES_HTML" | sed -e 's/<h2>/## /g' -e 's/<\/h2>//g' \
+            -e 's/<h3>/### /g' -e 's/<\/h3>//g' \
+            -e 's/<ul>//g' -e 's/<\/ul>//g' \
+            -e 's/<li>/- /g' -e 's/<\/li>//g' \
+            -e 's/                /  /g' \
+            -e 's/            //g' \
+            -e 's/        //g')
+          
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$NOTES_MD" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Journal for macOS ${{ env.VERSION }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+          files: build/Journal.for.macOS.zip 
