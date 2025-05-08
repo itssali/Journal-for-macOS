@@ -1,3 +1,4 @@
 update_version.sh
 exportOptions.plist
 downgrade_version.sh
+create_release.sh

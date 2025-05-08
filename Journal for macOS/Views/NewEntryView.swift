@@ -4,13 +4,17 @@ import SwiftUIIntrospect
 struct NewEntryView: View {
     let onDismiss: () -> Void
     @StateObject private var storage = LocalStorageManager.shared
-    @State private var title = ""
-    @State private var content = ""
+    @State private var title: String = ""
+    @State private var content: String = ""
     @State private var selectedEmotions: Set<String> = []
     @State private var pleasantnessValue: Double = 0.5
-    @State private var isShowingEmotionSelection: Bool = false
+    @State private var isShowingEmotionSelection = false
     @State private var attachments: [ImageAttachment] = []
+    @State private var attributedContent: NSAttributedString?
     @State private var showingCancelAlert = false
+    
+    // Reference to the text editor to access formatted content
+    @State private var textEditor: CustomTextEditor?
     
     var body: some View {
         VStack(spacing: 16) {
@@ -37,13 +41,19 @@ struct NewEntryView: View {
             CustomTextField(placeholder: "Title", text: $title)
                 .padding(.horizontal)
             
-            CustomTextEditor(
+            // Pass the textEditor reference so we can access it later
+            let editor = CustomTextEditor(
                 placeholder: "Write Something...", 
                 text: $content,
-                attachments: $attachments
+                attachments: $attachments,
+                attributedContent: $attributedContent
             )
-            .padding(.horizontal)
-            .padding(.bottom, 16)
+            editor
+                .padding(.horizontal)
+                .padding(.bottom, 16)
+                .onAppear {
+                    self.textEditor = editor
+                }
             
             VStack {
                 EmotionOrbButton(action: {
@@ -91,7 +101,8 @@ struct NewEntryView: View {
     
     private func saveEntry() {
         if !title.isEmpty && !content.isEmpty {
-            let entry = JournalEntry(
+            // Create the entry
+            var entry = JournalEntry(
                 id: UUID(),
                 title: title,
                 content: content,
@@ -100,10 +111,21 @@ struct NewEntryView: View {
                 pleasantness: pleasantnessValue,
                 tags: [],
                 wordCount: content.split(separator: " ").count,
+                isEditing: false,
+                isPinned: false,
                 attachments: attachments
             )
-            storage.saveEntry(entry)
-            onDismiss()
+            
+            // Save the formatted content if available
+            if let attrString = attributedContent {
+                entry.setAttributedContent(attrString)
+            }
+            
+            // Add the entry to storage
+            DispatchQueue.main.async {
+                storage.addEntry(entry)
+                onDismiss()
+            }
         }
     }
 }

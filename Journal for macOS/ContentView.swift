@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @StateObject private var storage = LocalStorageManager.shared
+    @StateObject private var onboardingManager = OnboardingManager()
     @State private var searchText = ""
     @State private var showingNewEntry = false
     @State private var selectedEntry: JournalEntry?
@@ -17,6 +19,20 @@ struct ContentView: View {
     // Simple computed properties
     var totalWords: Int {
         storage.entries.reduce(0) { $0 + $1.wordCount }
+    }
+    
+    var entriesThisYear: Int {
+        // Get the current calendar year (from system clock, not simulation)
+        let calendar = Calendar.current
+        let currentYear = calendar.component(.year, from: Date())
+        
+        // Filter entries by the current year only
+        let filteredEntries = storage.entries.filter { entry in
+            let entryYear = calendar.component(.year, from: entry.date)
+            return entryYear == currentYear
+        }
+        
+        return filteredEntries.count
     }
     
     var journaledDays: Int {
@@ -67,14 +83,28 @@ struct ContentView: View {
         ZStack {
             HSplitView {
                 VStack(spacing: 0) {
-                    statsHeader
+                    // Header section with greeting and stats
+                    VStack(spacing: 0) {
+                        HStack {
+                            UserGreetingView()
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        
+                        statsHeader
+                    }
+                    .background(
+                        VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
+                            .ignoresSafeArea()
+                    )
+                    
                     Divider()
                         .background(Color.white.opacity(0.2))
                     entriesList
                 }
                 .frame(minWidth: 375, maxWidth: 500)
-                
-                
                 
                 detailView
                     .frame(minWidth: 400)
@@ -83,39 +113,115 @@ struct ContentView: View {
                             .ignoresSafeArea()
                     )
             }
-            
             .frame(minHeight: 650)
             
             CustomSheet(
-            isPresented: showingNewEntry,
-            content: NewEntryView(onDismiss: { showingNewEntry = false }),
-            onDismiss: { showingNewEntry = false }
-        )
-        
-        CustomSheet(
-            isPresented: selectedEntry?.isEditing ?? false,
-            content: EditEntryView(
-                entry: Binding(
-                    get: { selectedEntry ?? JournalEntry.empty },
-                    set: { updatedEntry in
-                        if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
-                            storage.entries[index] = updatedEntry
-                            selectedEntry = updatedEntry
-                            storage.saveEntries()
+                isPresented: showingNewEntry,
+                content: NewEntryView(onDismiss: { showingNewEntry = false }),
+                onDismiss: { showingNewEntry = false }
+            )
+            
+            CustomSheet(
+                isPresented: selectedEntry?.isEditing ?? false,
+                content: EditEntryView(
+                    entry: Binding(
+                        get: { selectedEntry ?? JournalEntry.empty },
+                        set: { updatedEntry in
+                            if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
+                                storage.updateEntry(storage.entries[index], with: updatedEntry)
+                                selectedEntry = updatedEntry
+                            }
                         }
+                    ),
+                    selectedEntry: $selectedEntry,
+                    onDismiss: {
+                        selectedEntry?.isEditing = false
                     }
                 ),
-                selectedEntry: $selectedEntry,
                 onDismiss: {
                     selectedEntry?.isEditing = false
                 }
-            ),
-            onDismiss: {
-                selectedEntry?.isEditing = false
+            )
+        }
+        .onChange(of: onboardingManager.showOnboarding) { _, showOnboarding in
+            if showOnboarding {
+                // Replace sheet with fullscreen overlay
+                DispatchQueue.main.async {
+                    if let window = NSApp.windows.first,
+                       let contentView = window.contentView {
+                        // Create onboarding view
+                        let onboardingView = OnboardingView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .edgesIgnoringSafeArea(.all)
+                        
+                        // Create hosting view
+                        let hostingView = NSHostingView(rootView: onboardingView)
+                        hostingView.frame = contentView.bounds
+                        hostingView.autoresizingMask = [.width, .height]
+                        
+                        // Remove any existing view first
+                        onboardingManager.onboardingHostingView?.removeFromSuperview()
+                        
+                        // Add to window and save reference
+                        contentView.addSubview(hostingView)
+                        onboardingManager.onboardingHostingView = hostingView
+                    }
+                }
+            } else {
+                // Remove the view when done
+                DispatchQueue.main.async {
+                    onboardingManager.onboardingHostingView?.removeFromSuperview()
+                    onboardingManager.onboardingHostingView = nil
+                }
             }
-        )
+        }
+        .onChange(of: onboardingManager.showVersionOnboarding) { _, showVersionOnboarding in
+            if showVersionOnboarding {
+                // Replace sheet with fullscreen overlay
+                DispatchQueue.main.async {
+                    if let window = NSApp.windows.first,
+                       let contentView = window.contentView {
+                        // Create version onboarding view
+                        let versionOnboardingView = OnboardingView(
+                            isVersionSpecific: true,
+                            versionNumber: onboardingManager.getCurrentVersion(),
+                            versionFeatures: onboardingManager.getVersionFeatures()
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .edgesIgnoringSafeArea(.all)
+                        
+                        // Create hosting view
+                        let hostingView = NSHostingView(rootView: versionOnboardingView)
+                        hostingView.frame = contentView.bounds
+                        hostingView.autoresizingMask = [.width, .height]
+                        
+                        // Remove any existing view first
+                        onboardingManager.versionOnboardingHostingView?.removeFromSuperview()
+                        
+                        // Add to window and save reference
+                        contentView.addSubview(hostingView)
+                        onboardingManager.versionOnboardingHostingView = hostingView
+                    }
+                }
+            } else {
+                // Remove the view when done
+                DispatchQueue.main.async {
+                    onboardingManager.versionOnboardingHostingView?.removeFromSuperview()
+                    onboardingManager.versionOnboardingHostingView = nil
+                }
+            }
+        }
+        .onAppear {
+            // Setup notification observer for showing onboarding from Settings
+            NotificationCenter.default.addObserver(
+                forName: Notification.Name("ShowOnboarding"),
+                object: nil,
+                queue: .main
+            ) { _ in
+                onboardingManager.showStandardOnboarding()
+            }
+        }
     }
-}
     
     // Break down body into smaller views
     private var statsHeader: some View {
@@ -123,7 +229,7 @@ struct ContentView: View {
             StatView(
                 icon: "journal",
                 title: "Entries This Year",
-                value: "\(storage.entries.count)",
+                value: "\(entriesThisYear)",
                 iconColor: Color(red: 0.37, green: 0.36, blue: 0.90)
             )
             .frame(height: 65)
@@ -153,15 +259,9 @@ struct ContentView: View {
             .frame(height: 65)
             .padding(.horizontal, 16)
         }
-        
         .padding(.horizontal)
         .padding(.vertical, 11)
-        .background(
-            VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
-                .ignoresSafeArea()
-        )
     }
-    
     
     private var entriesList: some View {
         ZStack(alignment: .bottom) {
@@ -194,8 +294,11 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                // Add spacer view at the bottom with increased height
+                Color.clear.frame(height: 80) // Increased height for better spacing
+                    .listRowBackground(Color.clear)
             }
-            
             .listStyle(.sidebar)
             .background(
                 VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
@@ -203,13 +306,11 @@ struct ContentView: View {
             )
             
             newEntryButton
+                .padding(.bottom, 16) // Add padding to the button itself
         }
-        
     }
     private var newEntryButton: some View {
         ZStack {
-           
-            
             Button(action: { showingNewEntry.toggle() }) {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -223,14 +324,14 @@ struct ContentView: View {
         .padding(.bottom)
     }
     
+    
     private var detailView: some View {
         Group {
             if selectedEntry != nil {
                 EntryDetailView(entry: $selectedEntry) { updatedEntry in
                     if let index = storage.entries.firstIndex(where: { $0.id == updatedEntry.id }) {
-                        storage.entries[index] = updatedEntry
+                        storage.updateEntry(storage.entries[index], with: updatedEntry)
                         self.selectedEntry = updatedEntry
-                        storage.saveEntries()
                     }
                 }
                 .transaction { transaction in
@@ -253,6 +354,20 @@ struct ContentView: View {
             }
         }
     }
+    
+    // Replace direct array modifications with manager method calls
+    private func moveEntry(from source: IndexSet, to destination: Int) {
+        storage.moveEntries(from: source, to: destination)
+    }
+    
+    private func deleteEntry(at offsets: IndexSet) {
+        for index in offsets {
+            storage.deleteEntry(storage.entries[index])
+        }
+    }
+    
+    // If you have any other direct modifications to storage.entries, 
+    // replace them with appropriate manager method calls
 }
 
 extension Color {
@@ -294,3 +409,5 @@ extension Color {
     ContentView()
         .frame(width: 920, height: 700)
 }
+
+

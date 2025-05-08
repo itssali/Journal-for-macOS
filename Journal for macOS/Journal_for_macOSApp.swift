@@ -60,7 +60,16 @@ struct Journal_for_macOSApp: App {
         .windowStyle(.hiddenTitleBar)
         
         Settings {
-            SettingsView()
+            SettingsView(onShowOnboarding: {
+                // Simpler approach to show onboarding
+                UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                // Don't close the main window, only the settings window
+                NSApp.keyWindow?.close()
+                // A slight delay to ensure settings are closed first
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    NotificationCenter.default.post(name: Notification.Name("ShowOnboarding"), object: nil)
+                }
+            })
         }
     }
 }

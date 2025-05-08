@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 class LocalStorageManager: ObservableObject {
     static let shared = LocalStorageManager()
     
-    @Published var entries: [JournalEntry] = []
+    @Published private(set) var entries: [JournalEntry] = []
     private(set) var storageURL: URL
     
     init() {
@@ -87,38 +87,35 @@ class LocalStorageManager: ObservableObject {
     }
     
     func deleteEntry(_ entry: JournalEntry) {
-        let fileName = entry.title.replacingOccurrences(of: " ", with: "_") + ".journal"
-        let fileURL = storageURL.appendingPathComponent(fileName)
-        
-        do {
-            try FileManager.default.removeItem(at: fileURL)
-            if let index = entries.firstIndex(where: { $0.id == entry.id }) {
-                entries.remove(at: index)
+        if let index = entries.firstIndex(where: { $0.id == entry.id }) {
+            entries.remove(at: index)
+            
+            let fileName = entry.title.replacingOccurrences(of: " ", with: "_") + ".journal"
+            let fileURL = storageURL.appendingPathComponent(fileName)
+            
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                print("❌ Error deleting entry file: \(error)")
             }
-        } catch {
-            print("❌ Error deleting entry file: \(error)")
         }
     }
     
     func updateEntry(_ oldEntry: JournalEntry, with newEntry: JournalEntry) {
-        // First delete the old file
-        let oldFileName = oldEntry.title.replacingOccurrences(of: " ", with: "_") + ".journal"
-        let oldFileURL = storageURL.appendingPathComponent(oldFileName)
-        
-        do {
-            // Remove old file
-            try FileManager.default.removeItem(at: oldFileURL)
-            
-            // Save new entry
+        if let index = entries.firstIndex(where: { $0.id == oldEntry.id }) {
+            entries[index] = newEntry
             saveEntry(newEntry)
-            
-            // Update in-memory array
-            if let index = entries.firstIndex(where: { $0.id == oldEntry.id }) {
-                entries[index] = newEntry
-            }
-        } catch {
-            print("❌ Error updating entry: \(error)")
         }
+    }
+    
+    func addEntry(_ entry: JournalEntry) {
+        entries.append(entry)
+        saveEntry(entry)
+    }
+    
+    func moveEntries(from source: IndexSet, to destination: Int) {
+        entries.move(fromOffsets: source, toOffset: destination)
+        saveEntries()
     }
 }
 

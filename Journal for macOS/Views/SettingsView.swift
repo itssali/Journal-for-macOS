@@ -16,7 +16,7 @@ struct AboutView: View {
                     .fontWeight(.semibold)
                 Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")")
                     .foregroundColor(.secondary)
-                Text("© 2024 Ali Nasser")
+                Text("© 2025 Ali Nasser")
                     .foregroundColor(.secondary)
             }
             
@@ -45,7 +45,13 @@ struct AboutView: View {
         )
     }
 }
+
 struct SettingsView: View {
+    @AppStorage("userName") private var userName = ""
+    @Environment(\.dismiss) private var dismiss
+    var onShowOnboarding: () -> Void
+    
+    @State private var tempName = ""
     @StateObject private var storage = LocalStorageManager.shared
     @State private var showingImportPicker = false
     @State private var showingExportPicker = false
@@ -54,8 +60,62 @@ struct SettingsView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // General Tab
-            Form {
-                Section("Storage Location") {
+            VStack(spacing: 24) {
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        // Only dismiss the sheet, not the entire window
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, 16)
+                }
+                .padding(.top, 16)
+                
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("User Profile")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
+                    HStack {
+                        Text("Your Name")
+                            .frame(width: 100, alignment: .leading)
+                        
+                        TextField("Enter your name", text: $tempName)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(maxWidth: 300)
+                        
+                        Button("Save") {
+                            userName = tempName
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(tempName.isEmpty || tempName == userName)
+                    }
+                    .padding(.leading, 8)
+                    
+                    Spacer().frame(height: 16)
+                    
+                    Text("Onboarding")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
+                    Button("Show Onboarding") {
+                        onShowOnboarding()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.leading, 8)
+                    
+                    Spacer().frame(height: 16)
+                    
+                    Text("Storage Location")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Default Directory:")
                             .foregroundColor(.secondary)
@@ -78,26 +138,61 @@ struct SettingsView: View {
                         .background(Color.secondary.opacity(0.1))
                         .cornerRadius(6)
                     }
-                }
-                
-                Section("Data Management") {
+                    
+                    Spacer().frame(height: 16)
+                    
+                    Text("Data Management")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
                     VStack(alignment: .center, spacing: 12) {
                         Button(action: { showingImportPicker.toggle() }) {
                             Label("Import Entries from Folder", systemImage: "square.and.arrow.down")
                         }
+                        .buttonStyle(.borderedProminent)
                         
                         Button(action: { showingExportPicker.toggle() }) {
                             Label("Export All Entries", systemImage: "square.and.arrow.up")
                         }
+                        .buttonStyle(.borderedProminent)
                     }
                     .frame(maxWidth: .infinity)
                 }
+                .padding(.horizontal, 24)
+                
+                Spacer()
             }
-            .formStyle(.grouped)
-            .background(
-                VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
-                    .ignoresSafeArea()
-            )
+            .frame(width: 500, height: 600)
+            .onAppear {
+                tempName = userName
+            }
+            .fileImporter(
+                isPresented: $showingImportPicker,
+                allowedContentTypes: [.folder],
+                allowsMultipleSelection: false
+            ) { result in
+                if case .success(let urls) = result,
+                   let url = urls.first {
+                    guard url.startAccessingSecurityScopedResource() else {
+                        print("❌ Cannot access the selected location")
+                        return
+                    }
+                    defer { url.stopAccessingSecurityScopedResource() }
+                    
+                    do {
+                        try storage.importEntries(from: url)
+                        print("✅ Successfully imported entries from: \(url.path)")
+                    } catch {
+                        print("❌ Error importing entries: \(error)")
+                    }
+                }
+            }
+            .fileExporter(
+                isPresented: $showingExportPicker,
+                document: EntryDocument(entries: storage.entries),
+                contentType: .journal,
+                defaultFilename: "Journal Entries"
+            ) { _ in }
             .tabItem {
                 Label("General", systemImage: "gear")
             }
@@ -109,37 +204,9 @@ struct SettingsView: View {
                 }
                 .tag("About")
         }
-        .frame(width: 500, height: 400)
-        .background(
-            VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
-                .ignoresSafeArea()
-        )
-        .fileImporter(
-            isPresented: $showingImportPicker,
-            allowedContentTypes: [.folder],
-            allowsMultipleSelection: false
-        ) { result in
-            if case .success(let urls) = result,
-               let url = urls.first {
-                guard url.startAccessingSecurityScopedResource() else {
-                    print("❌ Cannot access the selected location")
-                    return
-                }
-                defer { url.stopAccessingSecurityScopedResource() }
-                
-                do {
-                    try storage.importEntries(from: url)
-                    print("✅ Successfully imported entries from: \(url.path)")
-                } catch {
-                    print("❌ Error importing entries: \(error)")
-                }
-            }
-        }
-        .fileExporter(
-            isPresented: $showingExportPicker,
-            document: EntryDocument(entries: storage.entries),
-            contentType: .journal,
-            defaultFilename: "Journal Entries"
-        ) { _ in }
     }
+}
+
+#Preview {
+    SettingsView(onShowOnboarding: {})
 }

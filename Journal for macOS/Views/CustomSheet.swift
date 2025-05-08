@@ -27,7 +27,7 @@ struct CustomSheet<Content: View>: View {
                         .frame(width: 600, height: 670)
                         .background(
                             VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
-                                .ignoresSafeArea()
+                            .ignoresSafeArea()
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .shadow(color: .black.opacity(0.2), radius: 20)

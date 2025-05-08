@@ -1,5 +1,6 @@
 import SwiftUI
 import Orb
+import AppKit
 
 struct EntryDetailView: View {
     @Binding var entry: JournalEntry?
@@ -116,25 +117,18 @@ struct EntryDetailView: View {
                             }
                         }
                         
-                        if !currentEntry.attachments.isEmpty {
-                            LazyVGrid(
-                                columns: [GridItem(.adaptive(minimum: 150))],
-                                spacing: 16
-                            ) {
-                                ForEach(currentEntry.attachments) { attachment in
-                                    if let image = attachment.image {
-                                        Image(nsImage: image)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .cornerRadius(8)
-                                    }
-                                }
-                            }
+                        // Use AttributedTextView if formatted content is available
+                        if let attributedString = currentEntry.attributedContent {
+                            AttributedTextView(attributedString: attributedString)
+                                .frame(maxWidth: .infinity)
+                                .frame(minHeight: 300)
+                                .background(Color.clear)
+                        } else {
+                            Text(currentEntry.content)
+                                .font(.body)
+                                .lineSpacing(8)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        
-                        Text(currentEntry.content)
-                            .font(.body)
-                            .lineSpacing(8)
                     }
                     .padding(.horizontal, 32)
                     .padding(.vertical, 24)
@@ -180,5 +174,44 @@ struct EntryDetailView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "E, d MMM yyyy"
         return formatter.string(from: date)
+    }
+}
+
+// Updated AttributedTextView to properly handle inline images
+struct AttributedTextView: NSViewRepresentable {
+    let attributedString: NSAttributedString
+    
+    func makeNSView(context: Context) -> NSTextView {
+        let scrollView = NSScrollView()
+        let textView = NSTextView(frame: scrollView.bounds)
+        
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.autohidesScrollers = true
+        
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.drawsBackground = false
+        textView.backgroundColor = .clear
+        textView.isRichText = true
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        textView.autoresizingMask = [.width]
+        textView.textContainer?.widthTracksTextView = true
+        textView.textContainer?.containerSize = NSSize(width: textView.bounds.width, height: CGFloat.greatestFiniteMagnitude)
+        
+        // Set the content
+        textView.textStorage?.setAttributedString(attributedString)
+        
+        scrollView.documentView = textView
+        return textView
+    }
+    
+    func updateNSView(_ textView: NSTextView, context: Context) {
+        textView.textStorage?.setAttributedString(attributedString)
+        
+        // Force layout update
+        textView.layoutManager?.ensureLayout(for: textView.textContainer!)
+        textView.sizeToFit()
     }
 }

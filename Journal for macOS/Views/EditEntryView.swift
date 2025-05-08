@@ -13,6 +13,10 @@ struct EditEntryView: View {
     @State private var isShowingEmotionSelection = false
     @State private var selectedDate: Date
     @State private var attachments: [ImageAttachment]
+    @State private var attributedContent: NSAttributedString?
+    
+    // Reference to the text editor to access formatted content
+    @State private var textEditor: CustomTextEditor?
     
     init(entry: Binding<JournalEntry>, selectedEntry: Binding<JournalEntry?>, onDismiss: @escaping () -> Void) {
         self._entry = entry
@@ -23,6 +27,7 @@ struct EditEntryView: View {
         self._pleasantnessValue = State(initialValue: entry.wrappedValue.effectivePleasantness)
         self._selectedDate = State(initialValue: entry.wrappedValue.date)
         self._attachments = State(initialValue: entry.wrappedValue.attachments)
+        self._attributedContent = State(initialValue: entry.wrappedValue.attributedContent)
         self.onDismiss = onDismiss
     }
     
@@ -54,13 +59,26 @@ struct EditEntryView: View {
             CustomTextField(placeholder: "Title", text: $title)
                 .padding(.horizontal)
             
-            CustomTextEditor(
+            // Create the editor with reference to access it later
+            let editor = CustomTextEditor(
                 placeholder: "Write Something...", 
                 text: $content,
-                attachments: $attachments
+                attachments: $attachments,
+                attributedContent: $attributedContent
             )
-            .padding(.horizontal)
-            .padding(.bottom, 16)
+            editor
+                .padding(.horizontal)
+                .padding(.bottom, 16)
+                .onAppear {
+                    self.textEditor = editor
+                    
+                    // If we have formatted content, set it in the NSTextView
+                    if let attributedString = entry.attributedContent {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            textEditor?.nsTextView?.textStorage?.setAttributedString(attributedString)
+                        }
+                    }
+                }
             
             VStack {
                 EmotionOrbButton(action: {
@@ -100,17 +118,34 @@ struct EditEntryView: View {
     
     private func saveEntry() {
         if !title.isEmpty && !content.isEmpty {
-            var updatedEntry = entry
-            updatedEntry.title = title
-            updatedEntry.content = content
-            updatedEntry.emotions = Array(selectedEmotions)
-            updatedEntry.pleasantness = pleasantnessValue
-            updatedEntry.attachments = attachments
-            updatedEntry.wordCount = content.split(separator: " ").count
-            updatedEntry.date = selectedDate
+            var updatedEntry = JournalEntry(
+                id: entry.id, 
+                title: title,
+                content: content,
+                date: selectedDate,
+                emotions: Array(selectedEmotions),
+                pleasantness: pleasantnessValue,
+                tags: entry.tags,
+                wordCount: content.split(separator: " ").count,
+                isEditing: false,
+                isPinned: entry.isPinned,
+                attachments: attachments,
+                formattedContent: entry.formattedContent // Preserve existing formatted content initially
+            )
             
+            // Update the formatted content if we have new formatting
+            if let attrString = attributedContent {
+                updatedEntry.setAttributedContent(attrString)
+            }
+            
+            // Update storage and references
             storage.updateEntry(entry, with: updatedEntry)
             entry = updatedEntry
+            
+            if selectedEntry?.id == entry.id {
+                selectedEntry = updatedEntry
+            }
+            
             onDismiss()
         }
     }

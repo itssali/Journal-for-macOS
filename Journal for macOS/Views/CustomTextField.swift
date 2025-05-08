@@ -10,15 +10,17 @@ struct CustomTextField: View {
             .textFieldStyle(.plain)
             .font(.system(size: 18, weight: .bold))
             .padding(12)
-            .background(Color(nsColor: .windowBackgroundColor).opacity(0.5))
+            .background(Color.clear)
             .cornerRadius(8)
             .introspect(.textField) { (textField: NSTextField) in
                 textField.focusRingType = .none
                 textField.backgroundColor = .clear
-                textField.drawsBackground = true
+                textField.drawsBackground = false
+                textField.isBezeled = false
+                textField.bezelStyle = .roundedBezel
                 
                 let attributes: [NSAttributedString.Key: Any] = [
-                    .foregroundColor: NSColor.placeholderTextColor,
+                    .foregroundColor: NSColor.placeholderTextColor.withAlphaComponent(0.6),
                     .font: NSFont.systemFont(ofSize: 18, weight: .bold)
                 ]
                 textField.placeholderAttributedString = NSAttributedString(

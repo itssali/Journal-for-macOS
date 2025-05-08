@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct CircularButtonStyle: ButtonStyle {
     let color: Color
@@ -35,88 +36,111 @@ struct EntryRow: View {
     let entry: JournalEntry
     @Binding var selectedEntry: JournalEntry?
     @State private var viewHeight: CGFloat = 0
-
+    
+    private var isSelected: Bool {
+        selectedEntry?.id == entry.id
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                if entry.isPinned {
-                    Image(systemName: "pin.fill")
-                        .foregroundColor(.yellow)
-                        .font(.caption)
-                }
-                Text(entry.title)
+            // Content preview
+            VStack(alignment: .leading, spacing: 4) {
+                Text(entry.title.isEmpty ? "Untitled" : entry.title)
                     .font(.headline)
-                    .lineLimit(1)
-                Spacer()
-                Text(formatDate(entry.date))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(isSelected ? .white : .primary)
+                
+                if let attributedString = entry.attributedContent {
+                    Text(attributedString.string.trimmingCharacters(in: .whitespacesAndNewlines))
+                        .font(.subheadline)
+                        .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                } else {
+                    Text(entry.content.trimmingCharacters(in: .whitespacesAndNewlines))
+                        .font(.subheadline)
+                        .foregroundColor(isSelected ? .white.opacity(0.9) : .secondary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                }
             }
             
-            Text(entry.content)
-                .font(.body)
-                .lineLimit(3)
-                .foregroundColor(.secondary)
-            
-            FlowLayout(spacing: 6) {
-                ForEach(entry.emotions, id: \.self) { emotion in
-                    Text(emotion)
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(0.1))
-                        )
-                }
+            // Bottom row with metadata and thumbnails
+            HStack(alignment: .center) {
+                // Date
+                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
+                    .font(.caption)
+                    .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
                 
                 Spacer()
                 
-                Text("\(entry.wordCount) words")
-                    .font(.caption)
+                // Image thumbnails
+                if !entry.attachments.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(entry.attachments.prefix(4)) { attachment in
+                            if let image = attachment.image {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                            }
+                        }
+                        if entry.attachments.count > 4 {
+                            Text("+\(entry.attachments.count - 4)")
+                                .font(.caption)
+                                .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                                .frame(width: 40, height: 40)
+                                .background(Color.secondary.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                        }
+                    }
+                }
+            }
+            
+            // Emotions if present
+            if !entry.emotions.isEmpty {
+                FlowLayout(spacing: 6) {
+                    ForEach(entry.emotions, id: \.self) { emotion in
+                        Text(emotion)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(isSelected ? Color.white.opacity(0.2) : Color.secondary.opacity(0.1))
+                            )
+                            .foregroundColor(isSelected ? .white : .secondary)
+                    }
+                }
             }
         }
         .padding(12)
-        .padding(.vertical, 8)
         .background(
-            GeometryReader { geometry in
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(selectedEntry?.id == entry.id ? 
-                          Color.customAccent.opacity(0.15) : 
-                          Color.clear)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-            }
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
         )
-        .animation(.easeInOut(duration: 0.2), value: selectedEntry?.id)
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 var newEntry = entry
-                newEntry.isEditing = false  // Explicitly set isEditing to false
+                newEntry.isEditing = false
                 selectedEntry = newEntry
             }
         }
         .swipeActions(edge: .leading) {
             Button {
-                if let index = storage.entries.firstIndex(where: { $0.id == entry.id }) {
-                    if !entry.isPinned {
-                        if let pinnedIndex = storage.entries.firstIndex(where: { $0.isPinned }) {
-                            var pinnedEntry = storage.entries[pinnedIndex]
-                            pinnedEntry.isPinned = false
-                            storage.entries[pinnedIndex] = pinnedEntry
-                        }
-                    }
-                    
-                    var updatedEntry = storage.entries[index]
-                    updatedEntry.isPinned.toggle()
-                    storage.entries[index] = updatedEntry
-                    storage.saveEntries()
+                var updatedEntry = entry
+                updatedEntry.isPinned.toggle()
+                storage.updateEntry(entry, with: updatedEntry)
+                
+                if selectedEntry?.id == entry.id {
+                    selectedEntry = updatedEntry
                 }
             } label: {
-                Label(entry.isPinned ? "Unpin" : "Pin", 
-                      systemImage: entry.isPinned ? "pin.slash.fill" : "pin.fill")
+                Image(systemName: entry.isPinned ? "pin.fill" : "pin")
+                    .foregroundColor(entry.isPinned ? .accentColor : .secondary)
             }
-            .tint(.yellow.opacity(0.7))
+            .buttonStyle(.plain)
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
@@ -138,12 +162,39 @@ struct EntryRow: View {
             }
             .tint(.blue)
         }
+        
     }
+    
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "E, d MMM"
         return formatter.string(from: date)
+    }
+}
+
+// Component for displaying formatted text preview
+struct AttributedTextPreview: NSViewRepresentable {
+    let attributedString: NSAttributedString
+    
+    func makeNSView(context: Context) -> NSTextView {
+        let textView = NSTextView()
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.drawsBackground = false
+        textView.backgroundColor = .clear
+        textView.textContainer?.widthTracksTextView = true
+        textView.isRichText = true
+        textView.textColor = NSColor.secondaryLabelColor
+        
+        // Set the content
+        textView.textStorage?.setAttributedString(attributedString)
+        
+        return textView
+    }
+    
+    func updateNSView(_ textView: NSTextView, context: Context) {
+        textView.textStorage?.setAttributedString(attributedString)
     }
 }
 
