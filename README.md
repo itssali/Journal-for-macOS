@@ -43,14 +43,13 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 
 ## ✨ Features
 
-- 📝 Clean, distraction-free writing experience
-- 🎨 Beautiful, native macOS design
-- 😊 Track your emotions with an intuitive Emotion Orb
-- 📊 Insightful writing statistics
-- 🗂 Organized by months
-- 🌙 Supports system appearance
-- ⚡️ Fast and lightweight
-- 💾 Local storage with iCloud sync coming soon
+- Clean, distraction-free writing experience
+- Beautiful, native macOS design
+- Track your emotions with an intuitive Emotion Orb
+- Insightful writing statistics
+- Organized by months
+- Supports system appearance
+- Fast and lightweight
 
 ## 🖥 Screenshots
 
@@ -60,7 +59,7 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
   <img src="Assets/new-entry.png" width="800" alt="New Entry Sheet" />
 </div>
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 - macOS 13.0 or later
@@ -71,7 +70,7 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 2. Open `Journal for macOS.xcodeproj` in Xcode
 3. Build and run
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - SwiftUI for the UI
 - UserDefaults for local storage
@@ -79,7 +78,7 @@ Since Apple hasn't brought their beautiful Journal app to macOS yet, I decided t
 - Sparkle for automatic updates
 - Orb for intuitive emotion tracking
 
-## 📝 License
+## License
 
 MIT License. See [LICENSE](LICENSE) for more information.
 
