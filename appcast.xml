@@ -3,55 +3,54 @@
     <channel>
         <title>Journal for macOS</title>
         <item>
-            <title>1.2.0</title>
+            <title>1.3.0</title>
             <description><![CDATA[
-        <h2>What's New in Journal for macOS 1.2.0</h2>
+        <h2>What's New in Journal for macOS 1.3.0</h2>
         
-        <h3>🎉 New Features & Improvements</h3>
+        <h3>✨ Quality of Life Improvements</h3>
         <ul>
-            <li>Enhanced Emotion Tracking
+            <li>Enhanced Onboarding Experience
                 <ul>
-                    <li>Introduced the new Emotion Orb interface for more intuitive mood tracking</li>
-                    <li>Smooth, fluid animations for a more engaging experience</li>
-                    <li>Better visual feedback when selecting emotions</li>
+                    <li>Improved full-screen onboarding presentation</li>
+                    <li>Properly centered page indicators for better visual balance</li>
+                    <li>Smoother transitions between onboarding screens</li>
                 </ul>
             </li>
-            <li>Refined Entry Views
+            <li>UI Refinements
                 <ul>
-                    <li>Improved layout consistency between new and edit entry views</li>
-                    <li>Enhanced visual harmony across all interfaces</li>
-                    <li>Optimized view transitions and animations</li>
-                    <li>Better padding and alignment in text fields</li>
+                    <li>Consistent background treatment for greeting and stats section</li>
+                    <li>Better visual integration between UI components</li>
+                    <li>Improved window handling with proper toolbar interactions</li>
                 </ul>
             </li>
-            <li>Performance Improvements
+            <li>Interaction Enhancements
                 <ul>
-                    <li>Removed unnecessary animations for smoother entry switching</li>
-                    <li>Optimized view transitions throughout the app</li>
-                    <li>Enhanced overall app responsiveness</li>
+                    <li>Fixed issues with custom sheet interactions</li>
+                    <li>Enhanced emotion selection interface responsiveness</li>
+                    <li>Smoother variable blur effect implementation</li>
                 </ul>
             </li>
-            <li>Visual Polish
+            <li>General Polish
                 <ul>
-                    <li>Restored transparent backgrounds for better visual consistency</li>
-                    <li>Improved field alignments and padding</li>
-                    <li>Better visual hierarchy in entry views</li>
+                    <li>Fixed window closing issues related to settings button</li>
+                    <li>Consolidated settings functionality in the toolbar</li>
+                    <li>Overall improved UI consistency and behavior</li>
                 </ul>
             </li>
         </ul>
 
-        <h3>🐛 Bug Fixes</h3>
+        <h3>🛠️ Technical Improvements</h3>
         <ul>
-            <li>Fixed field width consistency issues</li>
-            <li>Corrected emotion selection parameter naming</li>
-            <li>Various minor UI and performance improvements</li>
+            <li>Updated NSHostingView implementation for better view hosting</li>
+            <li>Fixed type-related issues in SwiftUI code</li>
+            <li>Improved code structure and component organization</li>
         </ul>
     ]]></description>
-            <pubDate>Wed, 20 Nov 2024 18:20:30 +0000</pubDate>
-            <sparkle:version>1.2.0</sparkle:version>
-            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+            <pubDate>Thu, 08 May 2025 12:27:04 +0000</pubDate>
+            <sparkle:version>1.3.0</sparkle:version>
+            <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3393285" type="application/octet-stream" sparkle:edSignature="9/LCUCjNkceZRuF5WqacbQS1ZvmoXbf20dtE1731IvxCDu563Zs1Bv3zhFiSPZxJUUzIxSRqS/U1S0tS9AW0Aw=="/>
+            <enclosure url="https://github.com/itssali/Journal-for-macOS/releases/latest/download/Journal.for.macOS.zip" length="3503712" type="application/octet-stream" sparkle:edSignature="sIO+55587CFOT96NzQJuCP02yEfJzHmD4D1p5lxYuyqKcVqhNWv+V9Ha5m4+KTCRasjDetusZqHwJCYt1AXMDA=="/>
         </item>
     </channel>
 </rss>
