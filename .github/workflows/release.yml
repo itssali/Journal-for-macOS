@@ -6,6 +6,10 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.3.0, v20.15.10
 
+# Add permissions to fix 403 error
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Create Release
