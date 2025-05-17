@@ -25,7 +25,9 @@ class LocalStorageManager: ObservableObject {
             
             entries = try files.compactMap { url in
                 let data = try Data(contentsOf: url)
-                return try JSONDecoder().decode(JournalEntry.self, from: data)
+                var entry = try JSONDecoder().decode(JournalEntry.self, from: data)
+                entry.syncAttachmentsIfNeeded()
+                return entry
             }.sorted { $0.date > $1.date }
         } catch {
             print("❌ Error loading entries: \(error)")

@@ -1,7 +1,6 @@
 import Foundation
 import AppKit
 
-// Import necessary modules
 import SwiftUI
 
 struct JournalEntry: Identifiable, Codable, Equatable {
@@ -19,7 +18,6 @@ struct JournalEntry: Identifiable, Codable, Equatable {
     var formattedContent: Data? = nil
     
     var effectivePleasantness: Double {
-        // Provide a default calculation if EmotionSelectionView is not available
         pleasantness ?? 0.5
     }
     
@@ -28,51 +26,76 @@ struct JournalEntry: Identifiable, Codable, Equatable {
         guard let data = formattedContent else {
             // If no formatted content exists, create one from plain text
             let attributes: [NSAttributedString.Key: Any] = [
-                .font: NSFont.systemFont(ofSize: 14),
-                .foregroundColor: NSColor.textColor
+                .font: NSFont.systemFont(ofSize: 16),
+                .foregroundColor: NSColor.white
             ]
             return NSAttributedString(string: content, attributes: attributes)
         }
         
         do {
-            return try NSAttributedString(data: data, 
-                                        options: [.documentType: NSAttributedString.DocumentType.rtfd],
-                                        documentAttributes: nil)
+            // Use RTFD format which preserves all formatting attributes including RichTextKit's
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.rtfd,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            // Create attributed string from stored data
+            let attrString = try NSAttributedString(data: data, options: options, documentAttributes: nil)
+            
+            // Return the attributed string directly - no need for extra copying
+            return attrString
         } catch {
-            print("Error converting data to NSAttributedString: \(error)")
-            return nil
+            // Fallback to plain text if loading fails
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 16),
+                .foregroundColor: NSColor.white
+            ]
+            return NSAttributedString(string: content, attributes: attributes)
         }
     }
     
     // Helper to set attributed string content
     mutating func setAttributedContent(_ attributedString: NSAttributedString) {
         do {
-            // Save both plain text and formatted version
+            // Update plain text content
             content = attributedString.string
-            formattedContent = try attributedString.data(
+            
+            // Use RTFD format which preserves all formatting attributes including RichTextKit's
+            let documentAttributes: [NSAttributedString.DocumentAttributeKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.rtfd,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            // Convert to data using RTFD format
+            let rtfdData = try attributedString.data(
                 from: NSRange(location: 0, length: attributedString.length),
-                documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]
+                documentAttributes: documentAttributes
             )
             
-            // Update word count
+            formattedContent = rtfdData
             wordCount = content.split(separator: " ").count
             
-            // Clear attachments if there are no images in the content
+            // Process attachments
             let range = NSRange(location: 0, length: attributedString.length)
-            var hasAttachments = false
-            attributedString.enumerateAttribute(.attachment, in: range, options: []) { value, _, stop in
-                if value != nil {
-                    hasAttachments = true
-                    stop.pointee = true
+            var newAttachments: [ImageAttachment] = []
+            
+            attributedString.enumerateAttribute(.attachment, in: range, options: []) { value, _, _ in
+                guard let attachment = value as? NSTextAttachment else { return }
+                
+                var image: NSImage? = attachment.image
+                
+                if image == nil, let fileWrapper = attachment.fileWrapper, let data = fileWrapper.regularFileContents {
+                    image = NSImage(data: data)
+                }
+                
+                if let image, let imageData = image.tiffRepresentation {
+                    let imageAttachment = ImageAttachment(id: UUID(), data: imageData)
+                    newAttachments.append(imageAttachment)
                 }
             }
             
-            if !hasAttachments {
-                attachments = []
-            }
+            attachments = newAttachments
         } catch {
-            print("Error converting NSAttributedString to data: \(error)")
-            // On error, at least save the plain text
             content = attributedString.string
         }
     }
@@ -152,5 +175,30 @@ struct JournalEntry: Identifiable, Codable, Equatable {
         isPinned = try container.decodeIfPresent(Bool.self, forKey: .isPinned) ?? false
         attachments = try container.decodeIfPresent([ImageAttachment].self, forKey: .attachments) ?? []
         formattedContent = try container.decodeIfPresent(Data.self, forKey: .formattedContent)
+    }
+    
+    mutating func syncAttachmentsIfNeeded() {
+        guard let attributed = self.attributedContent else { return }
+        
+        let range = NSRange(location: 0, length: attributed.length)
+        var newAttachments: [ImageAttachment] = []
+        
+        attributed.enumerateAttribute(.attachment, in: range, options: []) { value, _, _ in
+            guard let attachment = value as? NSTextAttachment else { return }
+            
+            var image: NSImage? = attachment.image
+            if image == nil, let fileWrapper = attachment.fileWrapper, let data = fileWrapper.regularFileContents {
+                image = NSImage(data: data)
+            }
+            
+            if let image, let imageData = image.tiffRepresentation {
+                let imageAttachment = ImageAttachment(id: UUID(), data: imageData)
+                newAttachments.append(imageAttachment)
+            }
+        }
+        
+        if !newAttachments.isEmpty || !attachments.isEmpty {
+            attachments = newAttachments
+        }
     }
 }

@@ -15,19 +15,27 @@ struct CustomSheet<Content: View>: View {
         GeometryReader { geometry in
             ZStack {
                 if isPresented || isVisible {
-                    Color.black
+                    Rectangle()
+                        .fill(Color.black)
                         .opacity(isVisible ? 0.3 : 0)
+                        .allowsHitTesting(true)
                         .ignoresSafeArea()
+                        .accessibility(hidden: true)
                         .onTapGesture {
-                            dismiss()
+                            // Optional: allow dismissing by clicking outside
+                            // dismiss()
                         }
                     
-                    
                     content
-                        .frame(width: 600, height: 670)
+                        .frame(width: 550, height: 650)
                         .background(
-                            VisualEffectView(material: .sidebar, blendingMode: .behindWindow)
-                            .ignoresSafeArea()
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(nsColor: .windowBackgroundColor))
+                                
+                                VisualEffectView(material: .sidebar, blendingMode: .withinWindow)
+                                    .cornerRadius(12)
+                            }
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .shadow(color: .black.opacity(0.2), radius: 20)
@@ -37,6 +45,7 @@ struct CustomSheet<Content: View>: View {
                             x: geometry.size.width / 2,
                             y: geometry.size.height / 2
                         )
+                        .zIndex(100)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

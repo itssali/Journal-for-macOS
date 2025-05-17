@@ -1,5 +1,5 @@
 import SwiftUI
-import SwiftUIIntrospect
+import RichTextKit
 
 struct EditEntryView: View {
     @StateObject private var storage = LocalStorageManager.shared
@@ -15,9 +15,6 @@ struct EditEntryView: View {
     @State private var attachments: [ImageAttachment]
     @State private var attributedContent: NSAttributedString?
     
-    // Reference to the text editor to access formatted content
-    @State private var textEditor: CustomTextEditor?
-    
     init(entry: Binding<JournalEntry>, selectedEntry: Binding<JournalEntry?>, onDismiss: @escaping () -> Void) {
         self._entry = entry
         self._selectedEntry = selectedEntry
@@ -28,92 +25,87 @@ struct EditEntryView: View {
         self._selectedDate = State(initialValue: entry.wrappedValue.date)
         self._attachments = State(initialValue: entry.wrappedValue.attachments)
         self._attributedContent = State(initialValue: entry.wrappedValue.attributedContent)
+        
         self.onDismiss = onDismiss
     }
     
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Text("Edit Entry")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
-                HStack(spacing: 16) {
-                    CustomActionButton("Delete", role: .destructive) {
-                        storage.deleteEntry(entry)
-                        if selectedEntry?.id == entry.id {
-                            selectedEntry = nil
+        ZStack {
+            VStack(spacing: 16) {
+                HStack {
+                    Text("Edit Entry")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Spacer()
+                    HStack(spacing: 16) {
+                        CustomActionButton("Delete", role: .destructive) {
+                            handleDelete()
                         }
-                        onDismiss()
-                    }
-                    CustomActionButton("Cancel", role: .cancel) { 
-                        onDismiss() 
-                    }
-                    CustomActionButton("Save", isDisabled: title.isEmpty || content.isEmpty) {
-                        saveEntry()
-                    }
-                }
-            }
-            .padding()
-            
-            CustomTextField(placeholder: "Title", text: $title)
-                .padding(.horizontal)
-            
-            // Create the editor with reference to access it later
-            let editor = CustomTextEditor(
-                placeholder: "Write Something...", 
-                text: $content,
-                attachments: $attachments,
-                attributedContent: $attributedContent
-            )
-            editor
-                .padding(.horizontal)
-                .padding(.bottom, 16)
-                .onAppear {
-                    self.textEditor = editor
-                    
-                    // If we have formatted content, set it in the NSTextView
-                    if let attributedString = entry.attributedContent {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            textEditor?.nsTextView?.textStorage?.setAttributedString(attributedString)
+                        CustomActionButton("Cancel", role: .cancel) { 
+                            onDismiss() 
+                        }
+                        CustomActionButton("Save", isDisabled: title.isEmpty || content.isEmpty) {
+                            saveEntry()
                         }
                     }
                 }
-            
-            VStack {
-                EmotionOrbButton(action: {
-                    withAnimation(.spring(response: 0.3)) {
-                        isShowingEmotionSelection = true
-                    }
-                }, progress: pleasantnessValue)
-                .frame(width: 80, height: 80)
+                .padding()
+                
+                // Title field - use CustomTextField instead
+                CustomTextField(placeholder: "Entry Title", text: $title)
+                    .padding([.leading, .trailing])
+                
+                // Content editor - use CustomTextEditor
+                CustomTextEditor(
+                    placeholder: "Write Something...", 
+                    text: $content,
+                    attributedContent: $attributedContent,
+                    attachments: $attachments
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding([.leading, .trailing])
+                .padding(.bottom, 8)
+                
+                VStack {
+                    EmotionOrbButton(action: {
+                        withAnimation(.spring(response: 0.3)) {
+                            isShowingEmotionSelection = true
+                        }
+                    }, progress: pleasantnessValue)
+                    .frame(width: 80, height: 80)
+                }
+                .frame(height: 90)
+                .padding(.vertical, 4)
             }
-            .frame(height: 100)
-            .padding(.vertical, 8)
-        }
-        .overlay {
             if isShowingEmotionSelection {
-                ZStack {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.3)) {
-                                isShowingEmotionSelection = false
-                            }
-                        }
-                        .transition(.opacity)
-                    
-                    EmotionSelectionView(
-                        selectedEmotions: $selectedEmotions,
-                        pleasantnessValue: $pleasantnessValue,
-                        isShowingEmotionSelection: $isShowingEmotionSelection,
-                        cancelButtonIcon: "xmark.circle.fill"
-                    )
-                    .transition(.move(edge: .bottom))
-                }
+                Rectangle()
+                    .fill(Color.black.opacity(0.3))
+                    .allowsHitTesting(true)
+                    .ignoresSafeArea()
+                    .accessibility(hidden: true)
+                
+                EmotionSelectionView(
+                    selectedEmotions: $selectedEmotions,
+                    pleasantnessValue: $pleasantnessValue,
+                    isShowingEmotionSelection: $isShowingEmotionSelection,
+                    cancelButtonIcon: "xmark.circle.fill"
+                )
+                .frame(width: 400, height: 500)
+                .zIndex(10)
             }
         }
         .keyboardShortcut(.return, modifiers: .shift)
+    }
+    
+    // Extract delete functionality to a separate method
+    private func handleDelete() {
+        DispatchQueue.main.async {
+            storage.deleteEntry(entry)
+            if selectedEntry?.id == entry.id {
+                selectedEntry = nil
+            }
+            onDismiss()
+        }
     }
     
     private func saveEntry() {
@@ -129,24 +121,50 @@ struct EditEntryView: View {
                 wordCount: content.split(separator: " ").count,
                 isEditing: false,
                 isPinned: entry.isPinned,
-                attachments: attachments,
-                formattedContent: entry.formattedContent // Preserve existing formatted content initially
+                attachments: attachments
             )
             
-            // Update the formatted content if we have new formatting
-            if let attrString = attributedContent {
-                updatedEntry.setAttributedContent(attrString)
+            // Update with current formatted content
+            if let attrContent = attributedContent {
+                // Create an RTFD representation to ensure all formatting is preserved
+                let documentAttributes: [NSAttributedString.DocumentAttributeKey: Any] = [
+                    .documentType: NSAttributedString.DocumentType.rtfd,
+                    .characterEncoding: String.Encoding.utf8.rawValue
+                ]
+                
+                do {
+                    // Convert to RTFD data and back to ensure all attributes are preserved
+                    let rtfdData = try attrContent.data(
+                        from: NSRange(location: 0, length: attrContent.length),
+                        documentAttributes: documentAttributes
+                    )
+                    
+                    let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                        .documentType: NSAttributedString.DocumentType.rtfd,
+                        .characterEncoding: String.Encoding.utf8.rawValue
+                    ]
+                    
+                    let verifiedString = try NSAttributedString(data: rtfdData, options: options, documentAttributes: nil)
+                
+                    // Use the verified string for saving
+                    updatedEntry.setAttributedContent(verifiedString)
+                } catch {
+                    // Fall back to direct setting if RTFD conversion fails
+                    updatedEntry.setAttributedContent(attrContent)
+                }
             }
             
-            // Update storage and references
-            storage.updateEntry(entry, with: updatedEntry)
-            entry = updatedEntry
-            
-            if selectedEntry?.id == entry.id {
-                selectedEntry = updatedEntry
+            // Update storage and references in async context
+            DispatchQueue.main.async {
+                storage.updateEntry(entry, with: updatedEntry)
+                entry = updatedEntry
+                
+                if selectedEntry?.id == entry.id {
+                    selectedEntry = updatedEntry
+                }
+                
+                onDismiss()
             }
-            
-            onDismiss()
         }
     }
 }

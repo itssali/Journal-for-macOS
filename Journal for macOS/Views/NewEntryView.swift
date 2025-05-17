@@ -1,5 +1,5 @@
 import SwiftUI
-import SwiftUIIntrospect
+import RichTextKit
 
 struct NewEntryView: View {
     let onDismiss: () -> Void
@@ -13,79 +13,70 @@ struct NewEntryView: View {
     @State private var attributedContent: NSAttributedString?
     @State private var showingCancelAlert = false
     
-    // Reference to the text editor to access formatted content
-    @State private var textEditor: CustomTextEditor?
-    
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Text("New Entry")
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
-                HStack(spacing: 16) {
-                    CustomActionButton("Cancel", role: .cancel) { 
-                        if !title.isEmpty || !content.isEmpty {
-                            showingCancelAlert = true
-                        } else {
-                            onDismiss()
-                        }
-                    }
-                    CustomActionButton("Save", isDisabled: title.isEmpty || content.isEmpty) {
-                        saveEntry()
-                    }
-                }
-            }
-            .padding()
-            
-            CustomTextField(placeholder: "Title", text: $title)
-                .padding(.horizontal)
-            
-            // Pass the textEditor reference so we can access it later
-            let editor = CustomTextEditor(
-                placeholder: "Write Something...", 
-                text: $content,
-                attachments: $attachments,
-                attributedContent: $attributedContent
-            )
-            editor
-                .padding(.horizontal)
-                .padding(.bottom, 16)
-                .onAppear {
-                    self.textEditor = editor
-                }
-            
-            VStack {
-                EmotionOrbButton(action: {
-                    withAnimation(.spring(response: 0.3)) {
-                        isShowingEmotionSelection = true
-                    }
-                }, progress: pleasantnessValue)
-                .frame(width: 80, height: 80)
-            }
-            .frame(height: 100)
-            .padding(.vertical, 8)
-        }
-        .overlay {
-            if isShowingEmotionSelection {
-                ZStack {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.3)) {
-                                isShowingEmotionSelection = false
+        ZStack {
+            VStack(spacing: 16) {
+                HStack {
+                    Text("New Entry")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    Spacer()
+                    HStack(spacing: 16) {
+                        CustomActionButton("Cancel", role: .cancel) { 
+                            if !title.isEmpty || !content.isEmpty {
+                                showingCancelAlert = true
+                            } else {
+                                onDismiss()
                             }
                         }
-                        .transition(.opacity)
-                    
-                    EmotionSelectionView(
-                        selectedEmotions: $selectedEmotions,
-                        pleasantnessValue: $pleasantnessValue,
-                        isShowingEmotionSelection: $isShowingEmotionSelection,
-                        cancelButtonIcon: "xmark.circle.fill"
-                    )
-                    .transition(.move(edge: .bottom))
+                        CustomActionButton("Save", isDisabled: title.isEmpty || content.isEmpty) {
+                            saveEntry()
+                        }
+                    }
                 }
+                .padding()
+                
+                // Title field - use CustomTextField
+                CustomTextField(placeholder: "Entry Title", text: $title)
+                    .padding([.leading, .trailing])
+                
+                // Content editor - use CustomTextEditor
+                CustomTextEditor(
+                    placeholder: "Write Something...", 
+                    text: $content,
+                    attributedContent: $attributedContent,
+                    attachments: $attachments
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding([.leading, .trailing])
+                .padding(.bottom, 8)
+                
+                VStack {
+                    EmotionOrbButton(action: {
+                        withAnimation(.spring(response: 0.3)) {
+                            isShowingEmotionSelection = true
+                        }
+                    }, progress: pleasantnessValue)
+                    .frame(width: 80, height: 80)
+                }
+                .frame(height: 90)
+                .padding(.vertical, 4)
+            }
+            if isShowingEmotionSelection {
+                Rectangle()
+                    .fill(Color.black.opacity(0.3))
+                    .allowsHitTesting(true)
+                    .ignoresSafeArea()
+                    .accessibility(hidden: true)
+                
+                EmotionSelectionView(
+                    selectedEmotions: $selectedEmotions,
+                    pleasantnessValue: $pleasantnessValue,
+                    isShowingEmotionSelection: $isShowingEmotionSelection,
+                    cancelButtonIcon: "xmark.circle.fill"
+                )
+                .frame(width: 400, height: 500)
+                .zIndex(10)
             }
         }
         .alert("Discard Changes?", isPresented: $showingCancelAlert) {
@@ -97,6 +88,20 @@ struct NewEntryView: View {
             Text("All your changes will be lost.")
         }
         .keyboardShortcut(.return, modifiers: .shift)
+        .task {
+            // Reset fields on appear using task rather than in view body
+            resetFields()
+        }
+    }
+    
+    // Extract field reset to separate function that can be called from task
+    private func resetFields() {
+        title = ""
+        content = ""
+        selectedEmotions = []
+        pleasantnessValue = 0.5
+        attachments = []
+        attributedContent = nil
     }
     
     private func saveEntry() {
@@ -116,9 +121,12 @@ struct NewEntryView: View {
                 attachments: attachments
             )
             
-            // Save the formatted content if available
-            if let attrString = attributedContent {
-                entry.setAttributedContent(attrString)
+            // Save the attributed content - this will also update attachments
+            if let attrContent = attributedContent {
+                // Important: Create a new attributed string to preserve all attributes
+                // Don't modify the existing one as this can sometimes lose attributes
+                let attrCopy = NSAttributedString(attributedString: attrContent)
+                entry.setAttributedContent(attrCopy)
             }
             
             // Add the entry to storage

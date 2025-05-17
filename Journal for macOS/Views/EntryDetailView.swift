@@ -1,6 +1,10 @@
 import SwiftUI
+// Import Orb conditionally to avoid error if not available
+#if canImport(Orb)
 import Orb
+#endif
 import AppKit
+import Foundation
 
 struct EntryDetailView: View {
     @Binding var entry: JournalEntry?
@@ -10,6 +14,7 @@ struct EntryDetailView: View {
     @State private var selectedDate: Date
     
     // Orb configurations
+    #if canImport(Orb)
     private let shadowOrb = OrbConfiguration(
         backgroundColors: [.black, .gray],
         glowColor: .gray,
@@ -64,18 +69,21 @@ struct EntryDetailView: View {
         showShadow: true,                        
         speed: 20
     )
+    #endif
     
     init(entry: Binding<JournalEntry?>, onUpdate: @escaping (JournalEntry) -> Void) {
         self._entry = entry
         self.onUpdate = onUpdate
         self._editingEntry = State(initialValue: entry.wrappedValue)
         self._selectedDate = State(initialValue: entry.wrappedValue?.date ?? Date())
+        self._isEditing = State(initialValue: entry.wrappedValue?.isEditing ?? false)
     }
     
     var body: some View {
-        Group {
+        ZStack {
             if let currentEntry = entry {
-                ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
                             Text(currentEntry.title)
@@ -85,13 +93,20 @@ struct EntryDetailView: View {
                             Spacer()
                             
                             HStack(spacing: 16) {
+                                #if canImport(Orb)
                                 OrbView(configuration: orbConfiguration(for: currentEntry))
                                     .frame(width: 32, height: 32)
+                                #else
+                                Circle()
+                                    .frame(width: 32, height: 32)
+                                    .foregroundColor(.secondary)
+                                #endif
                                 
                                 Button(action: { 
+                                    isEditing = true
                                     var updatedEntry = currentEntry
                                     updatedEntry.isEditing = true
-                                    entry = updatedEntry
+                                    onUpdate(updatedEntry)
                                 }) {
                                     Image(systemName: "pencil")
                                         .foregroundColor(.secondary)
@@ -104,7 +119,8 @@ struct EntryDetailView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        FlowLayout(spacing: 8) {
+                        // Handle missing FlowLayout
+                        HStack(spacing: 8) {
                             ForEach(currentEntry.emotions, id: \.self) { emotion in
                                 Text(emotion)
                                     .font(.caption)
@@ -115,40 +131,62 @@ struct EntryDetailView: View {
                                             .fill(Color(red: 0.37, green: 0.36, blue: 0.90).opacity(0.1))
                                     )
                             }
+                            Spacer()
                         }
-                        
-                        // Use AttributedTextView if formatted content is available
-                        if let attributedString = currentEntry.attributedContent {
-                            AttributedTextView(attributedString: attributedString)
-                                .frame(maxWidth: .infinity)
-                                .frame(minHeight: 300)
-                                .background(Color.clear)
-                        } else {
+                        .padding(.bottom, 8)
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.top, 24)
+
+                    Divider()
+                        .padding(.horizontal, 24)
+                    
+                    // Scrollable content
+                    if let attributedString = currentEntry.attributedContent {
+                        FullyScrollableAttributedTextView(attributedString: attributedString)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ScrollView(.vertical, showsIndicators: false) {
                             Text(currentEntry.content)
                                 .font(.body)
                                 .lineSpacing(8)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding([.horizontal, .top], 32)
+                                .padding(.bottom, 100)
                         }
                     }
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 24)
                 }
-                .background(
-                    VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
-                        .ignoresSafeArea()
-                )
+                .id(currentEntry.id)
+                .transition(.opacity)
             } else {
                 VStack {
                     Text("Select an entry to view")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.opacity)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut(duration: 0.18), value: entry)
+        .background(
+            VisualEffectView(material: .contentBackground, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+        )
+        .onChange(of: isEditing) { _, newValue in
+            if !newValue, let currentEntry = entry {
+                var updatedEntry = currentEntry
+                updatedEntry.isEditing = false
+                onUpdate(updatedEntry)
+            }
+        }
+        .onChange(of: entry?.isEditing) { _, newValue in
+            if let isEditingValue = newValue {
+                isEditing = isEditingValue
+            }
+        }
     }
     
+    #if canImport(Orb)
     private func orbConfiguration(for entry: JournalEntry) -> OrbConfiguration {
         let progress = (entry.effectivePleasantness - 0.5) * 2 // Convert 0-1 to -1 to 1
         
@@ -169,6 +207,7 @@ struct EntryDetailView: View {
             return fireOrb
         }
     }
+    #endif
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -177,41 +216,114 @@ struct EntryDetailView: View {
     }
 }
 
-// Updated AttributedTextView to properly handle inline images
-struct AttributedTextView: NSViewRepresentable {
+// Completely rewritten AttributedTextView that ensures full scrolling capability
+struct FullyScrollableAttributedTextView: NSViewRepresentable {
     let attributedString: NSAttributedString
     
-    func makeNSView(context: Context) -> NSTextView {
+    func makeNSView(context: Context) -> NSScrollView {
+        // Create a proper NSScrollView with scrollers
         let scrollView = NSScrollView()
-        let textView = NSTextView(frame: scrollView.bounds)
-        
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = true
+        scrollView.borderType = .noBorder
+        scrollView.drawsBackground = false
+        scrollView.backgroundColor = .clear
+        scrollView.contentView.backgroundColor = .clear
         
+        // Create and configure the text view
+        let textView = NSTextView()
         textView.isEditable = false
         textView.isSelectable = true
         textView.drawsBackground = false
         textView.backgroundColor = .clear
+        textView.textContainerInset = NSSize(width: 32, height: 32)
         textView.isRichText = true
+        
+        // Configure for vertical resizing but fixed width
+        textView.autoresizingMask = [.width]
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
-        textView.autoresizingMask = [.width]
-        textView.textContainer?.widthTracksTextView = true
-        textView.textContainer?.containerSize = NSSize(width: textView.bounds.width, height: CGFloat.greatestFiniteMagnitude)
         
-        // Set the content
-        textView.textStorage?.setAttributedString(attributedString)
+        // Set up text container for proper text wrapping
+        let textContainer = textView.textContainer!
+        textContainer.widthTracksTextView = true
+        textContainer.containerSize = NSSize(
+            width: scrollView.bounds.width,
+            height: CGFloat.greatestFiniteMagnitude
+        )
         
+        // Create a temporary RTFD representation to ensure all attributes are preserved
+        let documentAttributes: [NSAttributedString.DocumentAttributeKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.rtfd,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        
+        do {
+            // Convert to RTFD data and back to ensure all attributes are preserved
+            let rtfdData = try attributedString.data(
+                from: NSRange(location: 0, length: attributedString.length),
+                documentAttributes: documentAttributes
+            )
+            
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.rtfd,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            let verifiedString = try NSAttributedString(data: rtfdData, options: options, documentAttributes: nil)
+            
+            // Use the verified string
+            textView.textStorage?.setAttributedString(verifiedString)
+        } catch {
+            // Fall back to direct setting if RTFD conversion fails
+            textView.textStorage?.setAttributedString(attributedString)
+        }
+        
+        // Set text view as document view of scroll view
         scrollView.documentView = textView
-        return textView
+        
+        return scrollView
     }
     
-    func updateNSView(_ textView: NSTextView, context: Context) {
-        textView.textStorage?.setAttributedString(attributedString)
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        guard let textView = scrollView.documentView as? NSTextView else { return }
+        
+        // Create a temporary RTFD representation to ensure all attributes are preserved
+        let documentAttributes: [NSAttributedString.DocumentAttributeKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.rtfd,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        
+        do {
+            // Convert to RTFD data and back to ensure all attributes are preserved
+            let rtfdData = try attributedString.data(
+                from: NSRange(location: 0, length: attributedString.length),
+                documentAttributes: documentAttributes
+            )
+            
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.rtfd,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            let verifiedString = try NSAttributedString(data: rtfdData, options: options, documentAttributes: nil)
+        
+            // Use the verified string
+            textView.textStorage?.setAttributedString(verifiedString)
+        } catch {
+            // Fall back to direct setting if RTFD conversion fails
+            textView.textStorage?.setAttributedString(attributedString)
+        }
+        
+        // Update container size
+        let textContainer = textView.textContainer!
+        textContainer.containerSize = NSSize(
+            width: scrollView.contentView.bounds.width,
+            height: CGFloat.greatestFiniteMagnitude
+        )
         
         // Force layout update
-        textView.layoutManager?.ensureLayout(for: textView.textContainer!)
-        textView.sizeToFit()
+        textView.layoutManager?.ensureLayout(for: textContainer)
     }
 }

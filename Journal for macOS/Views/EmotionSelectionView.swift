@@ -354,129 +354,140 @@ struct EmotionSelectionView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 16) {
-                HStack {
-                    if !showingEmotions {
-                        Text("Choose how you're feeling right now")
-                            .font(.headline)
-                        Spacer()
-                    } else {
+                VStack(spacing: 16) {
+                    HStack {
+                        if !showingEmotions {
+                            Text("Choose how you're feeling right now")
+                                .font(.headline)
+                            Spacer()
+                        } else {
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3)) {
+                                    showingEmotions = false
+                                }
+                            }) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "chevron.left")
+                                    Text("Back")
+                                }
+                                .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                            Spacer()
+                        }
+                        
                         Button(action: {
                             withAnimation(.spring(response: 0.3)) {
-                                showingEmotions = false
+                                isShowingEmotionSelection = false
                             }
                         }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("Back")
-                            }
-                            .foregroundColor(.secondary)
+                            Image(systemName: cancelButtonIcon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.secondary)
                         }
                         .buttonStyle(.plain)
-                        Spacer()
                     }
-                    
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3)) {
-                            isShowingEmotionSelection = false
-                        }
-                    }) {
-                        Image(systemName: cancelButtonIcon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal)
-                
-                EmotionOrb(progress: normalizedPleasantnessValue)
-                    .padding(.vertical, 8)
-                
-                Text(currentPleasantnessLevel.name)
-                    .font(.title3)
-                    .fontWeight(.medium)
-                
-                if !showingEmotions {
-                    VStack(spacing: 16) {
-                        let emotionOrb = EmotionOrb(progress: normalizedPleasantnessValue)
-                        CustomSlider(value: $pleasantnessValue, configuration: emotionOrb.configuration)
-                        
-                        HStack {
-                            Text("Very Unpleasant")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .opacity(normalizedPleasantnessValue < -0.3 ? 1 : 0.5)
-                            Spacer()
-                            Text("Very Pleasant")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .opacity(normalizedPleasantnessValue > 0.3 ? 1 : 0.5)
-                        }
-                        .frame(maxWidth: 300)
-                    }
-                    .frame(height: 80)
-                    
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3)) {
-                            showingEmotions = true
-                        }
-                    }) {
-                        Text("Choose Emotions")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color(red: 0.37, green: 0.36, blue: 0.90))
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(.plain)
                     .padding(.horizontal)
-                } else {
-                    ScrollView(.vertical, showsIndicators: true) {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 8) {
-                            ForEach(currentPleasantnessLevel.emotions, id: \.self) { emotion in
-                                EmotionButton(
-                                    emotion: emotion,
-                                    isSelected: selectedEmotions.contains(emotion)
-                                ) {
-                                    if selectedEmotions.contains(emotion) {
-                                        selectedEmotions.remove(emotion)
-                                    } else {
-                                        selectedEmotions.insert(emotion)
+                    
+                    EmotionOrb(progress: normalizedPleasantnessValue)
+                        .padding(.vertical, 8)
+                    
+                    Text(currentPleasantnessLevel.name)
+                        .font(.title3)
+                        .fontWeight(.medium)
+                    
+                    if !showingEmotions {
+                        VStack(spacing: 16) {
+                            let emotionOrb = EmotionOrb(progress: normalizedPleasantnessValue)
+                            CustomSlider(value: $pleasantnessValue, configuration: emotionOrb.configuration)
+                                .animation(.linear(duration: 0.1), value: pleasantnessValue)
+                            
+                            HStack {
+                                Text("Very Unpleasant")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .opacity(normalizedPleasantnessValue < -0.3 ? 1 : 0.5)
+                                Spacer()
+                                Text("Very Pleasant")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .opacity(normalizedPleasantnessValue > 0.3 ? 1 : 0.5)
+                            }
+                            .frame(maxWidth: 300)
+                        }
+                        .frame(height: 80)
+                        
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3)) {
+                                showingEmotions = true
+                            }
+                        }) {
+                            Text("Choose Emotions")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color(red: 0.37, green: 0.36, blue: 0.90))
+                                .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
+                    } else {
+                        ScrollView(.vertical, showsIndicators: false) {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 8) {
+                                ForEach(currentPleasantnessLevel.emotions, id: \.self) { emotion in
+                                    EmotionButton(
+                                        emotion: emotion,
+                                        isSelected: selectedEmotions.contains(emotion)
+                                    ) {
+                                        if selectedEmotions.contains(emotion) {
+                                            selectedEmotions.remove(emotion)
+                                        } else {
+                                            selectedEmotions.insert(emotion)
+                                        }
                                     }
                                 }
                             }
+                            .padding(.horizontal)
                         }
+                        .frame(height: 200)
+                        
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3)) {
+                                isShowingEmotionSelection = false
+                            }
+                        }) {
+                            Text("Save")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color(red: 0.37, green: 0.36, blue: 0.90))
+                                .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
                         .padding(.horizontal)
                     }
-                    .frame(height: 200)
-                    
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3)) {
-                            isShowingEmotionSelection = false
-                        }
-                    }) {
-                        Text("Save")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color(red: 0.37, green: 0.36, blue: 0.90))
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal)
                 }
-            }
             .padding()
             .frame(width: 400, height: 500)
-            .background(VisualEffectView(material: .popover, blendingMode: .behindWindow))
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(nsColor: .windowBackgroundColor))
+                        .opacity(0.95)
+                    
+                    VisualEffectView(material: .popover, blendingMode: .withinWindow)
+                        .cornerRadius(12)
+                }
+            )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(color: .black.opacity(0.2), radius: 20)
             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
         }
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
@@ -538,6 +549,32 @@ struct ParentView: View {
 }
 
 struct EmotionOrbButton: View {
+    let action: () -> Void
+    let progress: Double
+    
+    private var orbConfig: OrbConfiguration {
+        let emotionOrb = EmotionOrb(progress: (progress - 0.5) * 2) // Convert from slider value to normalized value
+        return emotionOrb.configuration
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                Circle()
+                    .fill(Color.black.opacity(0.001))
+                    .frame(width: 120, height: 120)
+                
+                OrbView(configuration: orbConfig)
+                    .frame(width: 60, height: 60)
+                    .allowsHitTesting(false)
+            }
+        }
+        .buttonStyle(.plain)
+        .frame(width: 120, height: 120)
+    }
+}
+
+struct NewEmotionOrbButton: View {
     let action: () -> Void
     let progress: Double
     

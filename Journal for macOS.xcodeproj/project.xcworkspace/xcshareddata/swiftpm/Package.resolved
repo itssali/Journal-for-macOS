@@ -1,6 +1,15 @@
 {
-  "originHash" : "ae07c2fbbe2d74226170f5739ba1ebdb6f5cf8df0e920b1b107e8a17a65fd9f6",
+  "originHash" : "250e65888fc1d04f7fbace8646b8d015f14479c0b798b88bb813d57dcd9afb07",
   "pins" : [
+    {
+      "identity" : "richtextkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/danielsaidi/RichTextKit",
+      "state" : {
+        "revision" : "8aa44cfa645404ad84e52e3ab7723ecf4b82f92b",
+        "version" : "1.2.0"
+      }
+    },
     {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",
